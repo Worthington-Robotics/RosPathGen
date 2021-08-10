@@ -1,0 +1,5 @@
+Vector3[] points
+Float32 maxAccel = 8.0
+Float32 maxVel = 10.0
+---
+Waypoint[] waypoints
