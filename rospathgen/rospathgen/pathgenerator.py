@@ -21,6 +21,7 @@ class Point():
 class Waypoint():
     speed = 0
     name = ""
+    point = Point(0,0)
     def __init__(self, point: Point, speed, name):
         self.point = point
         self.speed = speed
@@ -31,14 +32,12 @@ class pathGen(Node):
     pointsOutput = [Point]
     waypointsOutput = [Waypoint]
     
-    def __init__(self):
-        super().__init__('pathGen')
-        self.pathService = self.create_service(GeneratePath, 'generate_path', self.generatepathcallback)
-
     def generatepathcallback(self, request, response):
         for i in range(request.points):
-            # TODO add each point to point input
-            filler
+            x = request.points[i].point.x
+            y = request.points[i].point.y
+            newPoint = Point(x, y)
+            self.pointInput.append(newPoint)
         maxAccelConst = request.maxAccel
         maxVelConst = request.maxVel
         
@@ -54,12 +53,11 @@ class pathGen(Node):
             # TODO do the math things and figure out how to store things in the way I want
             # Use the waypoint msg
             filler
+
+    def __init__(self):
+        super().__init__('pathGen')
+        self.pathService = self.create_service(GeneratePath, 'generate_path', self.generatepathcallback)
         
-
-
-        
-
-
 
 def main(args=None):
     rclpy.init(args=args)
