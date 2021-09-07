@@ -1,4 +1,4 @@
 Waypoint[] points
-Float32 maxAccel = 8.0
+float32 max_accel
 ---
 Waypoint[] waypoints

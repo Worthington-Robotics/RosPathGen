@@ -1,3 +1,3 @@
-Vector3 point
-Float32 maxVel = 10.0
-String name = ""
+geometry_msgs/Vector3 point
+float32 max_vel
+string name
