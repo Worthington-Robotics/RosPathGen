@@ -9,33 +9,20 @@ from geometry_msgs.msg import Vector3
 from rospathmsgs.msg import Waypoint
 import math
 
-class Point():
-    name = ""
-    x = 0
-    y = 0
-    z = 0
-    def __init__(self, xval, yval, zval = None, name = ""):
-        self.name = name
-        self.x = xval
-        self.y = yval
-        self.z = zval
-
 class Waypoint():
-    speed = 0
+    speed = 10
     name = ""
     x = 0
     y = 0
-    z = 0
-    def __init__(self, xval, yval, zval = None, speed = 0, name = ""):
+    def __init__(self, xval, yval, speed = 10, name = ""):
         self.x = xval
         self.y = yval
-        self.z = zval
         self.speed = speed
         self.name = name
 
 class pathGen(Node):
-    pointsInput = [Point]
-    pointsOutput = [Point]
+    pointsInput = [Waypoint]
+    pointsOutput = [Waypoint]
     waypointsOutput = [Waypoint]
     maxAccelConst = 8 
     maxVelConst = 10 
@@ -46,48 +33,28 @@ class pathGen(Node):
             y = request.points[i].point.y
             if not request.points[i].point.name:
                 name = request.points[i].point.name
-                newPoint = Point(x, y, name= name)
+                newPoint = Waypoint(x, y, speed =  request.points[i].point.speed, name= name)
             else:
-                newPoint = Point(x, y)
+                newPoint = Waypoint(x, y, speed =  request.points[i].point.speed)
             self.pointsInput.append(newPoint)
         self.maxAccelConst = request.maxAccel
-        self.maxVelConst = request.maxVel
         
         # points into lists of x and y inputs
-        for point in self.pointsInput:
-            self.xpoints.append(point.x)
-            self.ypoints.append(point.y)
+        self.xpoints.append(x)
+        self.ypoints.append(y)            
 
         # make a spline for the path
         path = CubicSpline(self.xpoints, self.ypoints)
 
+        currentMaxSpeed = 0
         for xval in np.arange(self.xpoints[0], self.xpoints[len(self.xpoints) - 1], 0.01):
             yval = path(xval)
-            newPoint = Point(xval, yval, name= self.pointsInput[self.xpoints.index(xval)].name)
+            if (self.xpoints.index(xval) != -1):
+                newPoint = Waypoint(xval, yval, speed= self.pointsInput[self.xpoints.index(xval)].speed, name= self.pointsInput[self.xpoints.index(xval)].name)
+                currentMaxSpeed = self.pointsInput[self.xpoints.index(xval)].speed
+            else:
+                newPoint = Waypoint(xval, yval, speed = currentMaxSpeed)
             self.pointsOutput.append(newPoint)
-            
-        self.distgraphxs = []
-        self.distgraphys = []
-        
-        self.distgraphxs.append(0)
-        self.distgraphys.append(0)
-
-        for point in self.pointsOutput:
-            # make the deriv graph loop
-            # speed is the deriv of the dist vs time graph
-
-            # Calculate Distances
-            distance = math.sqrt(pow((self.distgraphxs[len(self.distgraphxs)-1]-point.x), 2) 
-                + pow((self.distgraphys[len(self.distgraphys)-1]-point.y), 2))
-            self.distgraphxs = self.pointsOutput.index(point) / 100
-            self.distgraphys = distance
-
-        distancegraph = CubicSpline(self.distgraphxs, self.distgraphys)
-        derivdistgraph = distancegraph.derivative()
-        
-        for point in self.pointsOutput:
-            newWaypoint = Waypoint(point.x, point.y, speed= derivdistgraph(self.pointsOutput.index(point) / 100), name= point.name)
-            self.waypointsOutput.append(newWaypoint)
 
 
         
