@@ -1,4 +1,5 @@
 Waypoint[] points
 float32 max_accel
+float32 max_angular_vel
 ---
 Waypoint[] waypoints
