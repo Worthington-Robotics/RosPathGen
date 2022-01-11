@@ -1,3 +1,3 @@
 geometry_msgs/Vector3 point
-Int16 heading
-String name = ""
+float32 heading
+string point_name
