@@ -7,19 +7,23 @@ from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 
 class pathGen(Node):
-    waypointsOutput = [Waypoint]
-    maxAccelConst = 8 
+    pointsOutput = [Waypoint]
+    maxAccel = 8 
     maxVelConst = 10 
+    xpoints = []
+    ypoints = []
     
     def generatepathcallback(self, request, response):
+        """Give a list of waypoints, gives back entire path"""
         try: 
-            for i in len(request.points):
-                x = request.points[i].point.x
-                y = request.points[i].point.y
+            print(request)
+            for point in len(request.points):
+                x = request.points[point].point.x
+                y = request.points[point].point.y
                 # points into lists of x and y inputs
                 self.xpoints.append(x)
                 self.ypoints.append(y)   
-            self.maxAccelConst = request.max_accel         
+            self.maxAccel = request.max_accel         
 
             # make a spline for the path
             path = CubicSpline(self.xpoints, self.ypoints)
@@ -27,13 +31,18 @@ class pathGen(Node):
             currentMaxSpeed = 0
             for xval in np.arange(self.xpoints[0], self.xpoints[len(self.xpoints) - 1], 0.01):
                 yval = path(xval)
+                # If the xpoint is on the list, make it a point, immigrate data.
                 if (self.xpoints.index(xval) != -1):
                     pointname = self.pointsInput[self.xpoints.index(xval)].name
-                    newPoint = Waypoint(Vector3(xval, yval, 0),  speed= self.pointsInput[self.xpoints.index(xval)].max_vel, name= pointname if pointname is not None else "")
+                    # Create a point, if no name input, name = empty string so no errors
+                    newPoint = (Waypoint(Vector3(xval, yval, 0), speed = self.pointsInput[self.xpoints.index(xval)].max_vel, 
+                            name = pointname if pointname is not None else ""))
                     currentMaxSpeed = self.pointsInput[self.xpoints.index(xval)].max_vel
                 else:
+                    # If not on list, make a point
                     newPoint = Waypoint(Vector3(xval, yval, 0), speed = currentMaxSpeed)
                 self.pointsOutput.append(newPoint)
+            # Connect created list of points to output
             response.waypoints = self.pointsOutput
 
             return response
@@ -45,7 +54,7 @@ class pathGen(Node):
         super().__init__('pathGen')
         self.pathService = self.create_service(GeneratePath, 'generate_path', self.generatepathcallback)
         
-
+# Run a node, don't try to understand
 def main(args=None):
     rclpy.init(args=args)
     pathgen = pathGen()
