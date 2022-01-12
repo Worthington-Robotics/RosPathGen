@@ -18,11 +18,11 @@ class tester(Node):
     def send_request(self):
         # Add point to list in format 
         # Waypoint(Vector3(x, y, z), heading, max_vel, point_name)
-        self.request.points = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+        self.request.points = [ Waypoint(point=Vector3(x=10.0, y=0.0, z=0.0), 
                                     heading=0.0, 
                                     max_vel=10.0, 
                                     point_name="Start"),
-                                Waypoint(point=Vector3(x=5.0, y=0.0, z=0.0), 
+                                Waypoint(point=Vector3(x=5.0, y=1.0, z=0.0), 
                                     heading=0.0, 
                                     max_vel=10.0, 
                                     point_name="End")]
