@@ -17,15 +17,16 @@ class tester(Node):
 
     def send_request(self):
         # Add point to list in format 
-        # Waypoint(Vector3(x, y, z), heading, max_vel, point_name)
+        # Waypoint(Vector3(x, y, z), heading, velocity, point_name)
         self.request.points = [ Waypoint(point=Vector3(x=10.0, y=0.0, z=0.0), 
                                     heading=0.0, 
-                                    max_vel=10.0, 
+                                    velocity=10.0, 
                                     point_name="Start"),
                                 Waypoint(point=Vector3(x=5.0, y=1.0, z=0.0), 
                                     heading=0.0, 
-                                    max_vel=10.0, 
+                                    velocity=10.0, 
                                     point_name="End")]
+        self.request.max_velocity = 20.0
         self.request.max_accel = 20.0
         self.request.max_angular_vel = 20.0
         self.future = self.client.call_async(self.request)
