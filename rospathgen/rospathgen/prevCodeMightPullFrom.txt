@@ -1,0 +1,40 @@
+ # if (xvalues.count(xval) != 0):
+                #     # If the point is on input list, immigrate data.
+                #     index = xvalues.index(xval)
+                #     yval = yvalues[index]
+                #     pointname = pointsInput[index].point_name
+                #     # Create a point, if no name input, name = empty string so no errors
+                #     newPoint = Waypoint(point=Vector3(x=xval, y=yval, z=0.0), 
+                #                         heading= pointsInput[index].heading, 
+                #                         max_vel= pointsInput[index].velocity, 
+                #                         point_name= pointname if pointname is not None else "")
+                #     prevVelocity = pointsInput[index].velocity
+                # else:
+                #     # If not on list, make a point
+                #     yval = (float(cubicSpline(xval, *constants)) if not linear else float(linearSpline(xval, *constants)))
+                #     newPoint = Waypoint(point=Vector3(x=xval, y=yval, z=0.0), 
+                #                         heading= 0.0, # TODO Add heading enforcement
+                #                         max_vel= prevVelocity + maxAccel*0.01,
+                #                         point_name= "")
+                #     prevVelocity = prevVelocity + maxAccel*0.01
+        
+                # # Regardless, append the point created to the list
+                # pointsOutput.append(newPoint)
+
+
+                # if point.point.x <= pointsInput[points].point.x:
+                #     while nextxvalue < pointsInput[len(pointsInput)-1].point.x:
+                #         currentxvalue = nextxvalue
+                #         finalxvals.append(currentxvalue)
+                #         nextxvalue = currentxvalue + previousVelocity*tDelta + maxAccel*tDelta^2
+                #         if index+1 < len(pointsInput)-1:
+                #             if currentxvalue >= pointsInput[index+1].point.x:
+                #                 previousVelocity = pointsInput[index+1].velocity
+                #                 index = index+1
+                #     finalxvals.append(pointsInput[len(pointsInput)-1].point.x)
+
+
+            # for xvalue in finalxvals:
+            #     if point.velocity >= prevPoint.velocity:
+            #         # If increasing in velocity over the segment
+            #         prevVelocity = prevPoint.velocity

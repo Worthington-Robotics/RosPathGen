@@ -8,6 +8,7 @@ from geometry_msgs.msg import Vector3
 from scipy.optimize import curve_fit
 import sys
 import os
+import math
 
 
 def linearSpline(x, a, b):
@@ -16,8 +17,11 @@ def linearSpline(x, a, b):
 def cubicSpline(x, a, b, c, d):
    return a * x^3 + b*x^2 + c*x + d
 
-class pathGen(Node): 
 
+class pathGen(Node): 
+    def findDistance(self, start: Waypoint, endx, endy):
+        return math.sqrt((endx - start.point.x)**2 + (endy - start.point.y)**2)
+    
     def generatepathcallback(self, request, response):
         pointsInput = [] # Input list of points
         pointsOutput = [] # Output list of points
@@ -26,15 +30,16 @@ class pathGen(Node):
         # X and Y Seperated Input Values
         xvalues = []
         yvalues = []
+        timeParameterizedPoints = {} # Dictionary of Point: Time
         linear = False # is the path linear?
         """Give a list of waypoints, gives back entire path"""
         try: 
             #print(request)
             print(request.points)
             pointsInput = request.points
-            for point in range(len(pointsInput)):
-                x = pointsInput[point].point.x
-                y = pointsInput[point].point.y
+            for waypoint in range(len(pointsInput)):
+                x = pointsInput[waypoint].point.x
+                y = pointsInput[waypoint].point.y
                 # points into lists of x and y inputs
                 xvalues.append(x)
                 yvalues.append(y)
@@ -58,56 +63,68 @@ class pathGen(Node):
                 constants, _ = curve_fit(cubicSpline, xvalues, yvalues)
                 a,b,c,d = constants
 
-            # Velocity "Curve Fit"
             # Every velocity is it's own max velocity, 
             # basically slope at the max acceleration to the given velocity, 
             # then hold until either next velocity is 0 or max velocity changes            
+
+                   
+
+            # go through a loop where each point is at 0.01 seconds apart
+            # nextxvalue = previousxvalue + previousVelocity*tdelta + maxAccel*tdelta^2
             
-            time = 0
-            currentAccell = maxAccel
+            tDelta = 0.01 # Constant for time between points in final trajectory
+            currentTime = 0.0 # Current Time Var
 
-            previousSpeed = 0
+            # Timestep is currently 0.01 seconds
 
-
-            # Timestep is 0.01 seconds        
-            # Step = point.velocity*0.01 + maxAccel*0.01
+            # Parameterize starting point
             
-            for point in pointsInput: # for every point in the list of input points
-                if pointsInput.index(point) == 0: continue
-                prevPoint = pointsInput[pointsInput.index(point)-1]
-                # For this segment, make a list of points between this point and its previous point with distances at a timestep of 0.01 seconds
-                segmentTimedList = np.linspace(int(prevPoint.point.x), int(point.point.x), int(prevPoint.velocity*0.01 + maxAccel*0.01))
-                if point.velocity >= prevPoint.velocity:
-                    # If increasing in velocity over the segment
-                    prevVelocity = prevPoint.velocity
-                    for xval in segmentTimedList:
-                        # If the point is on input list, immigrate data.
-                        if (xvalues.count(xval) != 0):
-                            index = xvalues.index(xval)
-                            yval = yvalues[index]
-                            pointname = pointsInput[index].point_name
-                            # Create a point, if no name input, name = empty string so no errors
-                            newPoint = Waypoint(point=Vector3(x=xval, y=yval, z=0.0), 
-                                                heading= pointsInput[index].heading, 
-                                                max_vel= pointsInput[index].velocity, 
-                                                point_name= pointname if pointname is not None else "")
-                            prevVelocity = pointsInput[index].velocity
-                        else:
-                            # If not on list, make a point
-                            yval = (float(cubicSpline(xval, *constants)) if not linear else float(linearSpline(xval, *constants)))
-                            newPoint = Waypoint(point=Vector3(x=xval, y=yval, z=0.0), 
-                                                heading= 0.0, # TODO Add heading enforcement
-                                                max_vel= prevVelocity + maxAccel*0.01,
-                                                point_name= "")
-                            prevVelocity = prevVelocity + maxAccel*0.01
+            previousVelocity = pointsInput[0].velocity
+            timeParameterizedPoints[pointsInput[0]] = currentTime
+            currentTime = currentTime + 0.01
+            segmentAccel = maxAccel
+            segmentAngVel = maxAngularVelocity
+            
+            for waypoint in pointsInput: # for every point in the list of input points
+                if pointsInput.index(waypoint) == 0: continue
+                prevWaypoint = pointsInput[pointsInput.index(waypoint)-1]
+                startingHeading = prevWaypoint.heading
+                segStartTime = timeParameterizedPoints[prevWaypoint]
+                # If segment is supposed to be deccelerating, negate the acceleration
+                if waypoint.velocity < prevWaypoint.velocity: 
+                    segmentAccel = -maxAccel
+                else:
+                    segmentAccel = maxAccel
+                # If heading is rotating left (negative) then negate max angular velocity
+                segmentAngVel = -maxAngularVelocity if abs(prevWaypoint.heading - waypoint.heading) > 180 else maxAngularVelocity
+
+                while nextPoint.point.x < waypoint.point.x:
+                    #keep making waypoints every 0,01 seconds until done 
+                    xval = prevWaypoint.point.x + prevWaypoint.velocity*tDelta + maxAccel*tDelta^2 # x val calculated from tdelta
+                    yval = (float(cubicSpline(xval, *constants)) if not linear else float(linearSpline(xval, *constants))) # y val calculated from curve fitted earlier 
+                    velocityVal = math.sqrt(previousVelocity**2 + 2*segmentAccel*(self.findDistance(prevWaypoint, xval, yval)))
+                    headingVal = prevWaypoint.heading + (segmentAngVel * (currentTime-segStartTime)) # Heading Calculation using angular velocity
+                    if headingVal < 0: headingVal = 360+headingVal # make sure negative headings don't happen
+                    if segmentAngVel < 0: headingVal = (headingVal if headingVal < waypoint.heading else waypoint.heading) # Turning Left Overshoot Check
+                    else: headingVal = (headingVal if headingVal > waypoint.heading else waypoint.heading) # Turning Right Overshoot Check
+                    nextPoint = Waypoint(point=Vector3(x= xval, y=yval, z=0.0), 
+                                         heading= headingVal, # 
+                                         velocity= (velocityVal if velocityVal < maxVelocity else maxVelocity),
+                                         point_name= "")
+                    previousVelocity = velocityVal
+                    timeParameterizedPoints[nextPoint] = currentTime
+                    currentTime = currentTime + 0.01
+                    prevWaypoint = nextPoint
+               
+                # Parameterize last point (also end waypoint)
+                timeParameterizedPoints[waypoint] = currentTime
+                currentTime = currentTime + 0.01
                 
-                # Regardless, append the point created to the list
-                pointsOutput.append(newPoint)
-            
-
-
-
-            # 
+                
+                # Enforce global max velocity and max reachable velocity by global acceleration limit.
+                # vf = sqrt(vi^2 + 2*a*d)
+            for point in timeParameterizedPoints:
+                pointsOutput.append(point)    
             response.waypoints = pointsOutput
             return response
         except Exception as e:

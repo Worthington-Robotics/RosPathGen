@@ -5,6 +5,7 @@ import numpy as np
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 import matplotlib.pyplot as plt
+import math
 
 class tester(Node):
 
@@ -26,9 +27,9 @@ class tester(Node):
                                     heading=0.0, 
                                     velocity=10.0, 
                                     point_name="End")]
-        self.request.max_velocity = 20.0
-        self.request.max_accel = 20.0
-        self.request.max_angular_vel = 20.0
+        self.request.max_velocity = 5.5 # m/s
+        self.request.max_accel = 3.0 # m/s/s
+        self.request.max_angular_vel = math.pi/2 # rad / s 
         self.future = self.client.call_async(self.request)
 
 def graphOutput(response):
@@ -36,6 +37,7 @@ def graphOutput(response):
     yvals = []
     
     pointList = response.waypoints
+    print(pointList)
     for point in pointList:
         xvals.append(point.point.x)
         yvals.append(point.point.y)
@@ -48,7 +50,7 @@ def graphOutput(response):
     plt.plot(xvals,yvals, 'bo')
     plt.xlabel('X value (m)')
     plt.ylabel('Y value (m)')
-    plt.show()
+    #TODO Renable when done testing # plt.show()
 
 def main():
     rclpy.init()
