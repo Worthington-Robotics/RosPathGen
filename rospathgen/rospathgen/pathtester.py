@@ -7,6 +7,23 @@ from geometry_msgs.msg import Vector3
 import matplotlib.pyplot as plt
 import math
 
+path = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=10.0, 
+                 point_name="Start"),
+        Waypoint(point=Vector3(x=3.0, y=3.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=10.0, 
+                 point_name="mid"),
+        Waypoint(point=Vector3(x=6.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=10.0, 
+                 point_name="End")]
+
+
+
+
+
 class tester(Node):
 
     def __init__(self):
@@ -19,14 +36,7 @@ class tester(Node):
     def send_request(self):
         # Add point to list in format 
         # Waypoint(Vector3(x, y, z), heading, velocity, point_name)
-        self.request.points = [ Waypoint(point=Vector3(x=10.0, y=0.0, z=0.0), 
-                                    heading=0.0, 
-                                    velocity=10.0, 
-                                    point_name="Start"),
-                                Waypoint(point=Vector3(x=5.0, y=1.0, z=0.0), 
-                                    heading=0.0, 
-                                    velocity=10.0, 
-                                    point_name="End")]
+        self.request.points = path
         self.request.max_velocity = 5.5 # m/s
         self.request.max_accel = 3.0 # m/s/s
         self.request.max_angular_vel = math.pi/2 # rad / s 
@@ -35,9 +45,11 @@ class tester(Node):
 def graphOutput(response):
     xvals = []
     yvals = []
-    
+
     pointList = response.waypoints
     print(pointList)
+
+    
     for point in pointList:
         xvals.append(point.point.x)
         yvals.append(point.point.y)
@@ -45,12 +57,14 @@ def graphOutput(response):
             name = point.point_name
             name = str(name)
             #plt.text(xvals, yvals, name)        
-
+    
     #print(xvals, yvals)
     plt.plot(xvals,yvals, 'bo')
     plt.xlabel('X value (m)')
     plt.ylabel('Y value (m)')
-    #TODO Renable when done testing # plt.show()
+    for point in path:
+        plt.plot(point.point.x, point.point.y, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
+    plt.show()
 
 def main():
     rclpy.init()
