@@ -1,4 +1,4 @@
-from math import e, floor
+from turtle import heading
 import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import GeneratePath
@@ -6,37 +6,59 @@ import numpy as np
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 from scipy.optimize import curve_fit
+from scipy.interpolate import CubicHermiteSpline
 import sys
 import os
 import math
+import time
 
 
+debug = True
+
+# Linear and Cubic Spline Functions for use with SciPy Later on
 def linearSpline(x, a, b):
     return a*x + b
 
-def cubicSpline(x, a, b, c, d):
-   return a*x**3 + b*x**2 + c*x + d
 
+
+# Find Distance between a waypoint and a x and y value
+def findDistance(startx, starty, endx, endy):
+    return math.sqrt((endx - startx)**2 + (endy - starty)**2)
+
+# Using a previous x value and a goal distance, finds next x value using slope and euclidian distance
+def nextXPoint(prevx, prevy, goalDist, linear, curve: CubicHermiteSpline, constants=(0,0,0,0)):
+    nextX = prevx
+    nextY = prevy
+    distance = findDistance(prevx, prevy, nextX, nextY)
+    startTime = time.time()
+    while distance < goalDist and (time.time()-startTime) < 1:
+        nextX += 0.01 # Increment x by 0.1 mm
+        nextY = (float(curve(nextX)) if not linear else float(linearSpline(nextX, *constants)))
+        distance = findDistance(prevx, prevy, nextX, nextY)
+    #print(nextX)
+    return nextX
 
 class pathGen(Node): 
-    def findDistance(self, start: Waypoint, endx, endy):
-        return math.sqrt((endx - start.point.x)**2 + (endy - start.point.y)**2)
-    
     def generatepathcallback(self, request, response):
         pointsInput = [] # Input list of points
-        pointsOutput = [] # Output list of points
+        pointsNoHeadNoVel = [] # Points without heading or velocity
+        pointsNoHeadFWVel = [] # Points with no heading, no backwards velocity pass
+        pointsNoHead = [] # Points with no heading
+        pointsOutput = [] # Output list of points with heading and velocity
         maxAccel = 8 # Max Acceleration (Default)
         maxVelocity = 10 # Max Velocity (Default)
         # X and Y Seperated Input Values
         xvalues = []
         yvalues = []
-        timeParameterizedPoints = [] # List of points, linked to list of times
-        timeParameterizedTimes = []  # List of times
+        derivatives = []
+        pointsAsTuples = [] # List of the points as tuples
+        waypointIndexes = [] # List of all og waypoint indexes in pointsNoHead
+        headingSlopes = {} # Diction in the form finalIndex, slope 
         linear = False # is the path linear?
         """Give a list of waypoints, gives back entire path"""
         try: 
             #print(request)
-            print(request.points)
+            #print(request.points)
             pointsInput = request.points
             for waypoint in range(len(pointsInput)):
                 x = pointsInput[waypoint].point.x
@@ -44,48 +66,159 @@ class pathGen(Node):
                 # points into lists of x and y inputs
                 xvalues.append(x)
                 yvalues.append(y)
+                pointsAsTuples.append((x,y))
             # Pull Constants from request
             maxAccel = request.max_accel   
             maxVelocity = request.max_velocity
             maxAngularVelocity = request.max_angular_vel  
 
-            # DESIGN STANDARD: Any Start or End Point should have a velocity of 0
-            pointsInput[0].velocity = 0.0
-            pointsInput[len(pointsInput)-1].velocity = 0.0
+            
 
             # Scipy implementation of Curve Fitting
             if len(pointsInput) < 3:
                 slope = ((yvalues[1]-yvalues[0])/(xvalues[1]-xvalues[0]))
-                print(slope)
+                if debug: print("Slope: {}".format(slope))
                 # y-mx = b
                 intercept = yvalues[0]-(slope*xvalues[0])
                 constants = slope, intercept
-                print(intercept)
+                if debug: print("Intercept: {}".format(intercept))
                 linear = True
             else:
+                constants = 0,0
+                # Get Length to SciPy Minimum of 4
                 if len(xvalues) < 4:
                     xvalue = xvalues[0]+xvalues[1]/2
                     yvalue = yvalues[0]+yvalues[1]/2
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
-                constants, throwaway = curve_fit(cubicSpline, xvalues, yvalues) # throwaway there so things don't fail
-                a,b,c,d = constants 
+                # Find 1st Derivatives for each segment
+                for waypoint in pointsInput:
+                    if pointsInput.index(waypoint) == len(pointsInput)-1:
+                        derivatives.append(0)
+                        break
+                    index = pointsInput.index(waypoint)
+                    xvalue = xvalues[index]+xvalues[index+1]/2
+                    yvalue = yvalues[index]+yvalues[index+1]/2
+                    slope = yvalue/xvalue
+                    derivatives.append(slope)
+                curve = CubicHermiteSpline(xvalues, yvalues, derivatives)
+
+            # Stage 1: Get all the points, no headings, no velocities
+
+            for point in pointsInput:
+                if pointsInput.index(point) == 0: 
+                    pointsNoHeadNoVel.append(point)
+                    continue
+                prevPoint = pointsInput[pointsInput.index(point)-1]
+                slope = (point.point.y-prevPoint.point.y)/(point.point.x-prevPoint.point.x)
+                # go through a loop where each point is at 0.01 meters of distance (x and y) !! apart
+                # point is starting point find next x value by integral(a, b, sqrt(1+(f'(x))^2))dx = distance b/w points
+                nextX = nextXPoint(prevPoint.point.x, prevPoint.point.y, 0.01, linear, curve, constants)
+                startTime = time.time()
+                while nextX < point.point.x and (time.time()-startTime) < 1:
+                    # Make a point at (nextX, yval)
+                    yval = (float(curve(nextX)) if not linear else float(linearSpline(nextX, *constants))) # y val calculated from curve fitted earlier 
+                    if debug: print("xval: {} yval: {}".format(nextX, yval))
+                    nextPoint = Waypoint(point=Vector3(x= nextX, y=yval, z=0.0), 
+                                        heading= 0.0,  
+                                        velocity= 0.0,
+                                        point_name= "")
+                    pointsNoHeadNoVel.append(nextPoint)
+                    # Find the next x value
+                    nextX = nextXPoint(nextX, yval, 0.01, linear, curve, constants)
+                pointsNoHeadNoVel.append(point)
+            
+            
+            # Stage 2: Velocity
+            # Forward Pass
+            
+            currentMaxVel = pointsInput[0].velocity
+
+            # DESIGN STANDARD: Any Start or End Point should have a velocity of 0
+            #pointsInput[0].velocity = 0.0
+            pointsInput[len(pointsInput)-1].velocity = 0.0
+            
+            for point in pointsNoHeadNoVel:
+                prevPoint = pointsNoHeadNoVel[pointsNoHeadNoVel.index(point)-1]
+                if pointsNoHeadNoVel.index(point) == 0:
+                    if debug: print("Reset Max Velocity to 0 at point ({},{})".format(point.point.x, point.point.y))
+                    currentMaxVel = point.velocity
+                    point.velocity = 0.0
+                    pointsNoHeadFWVel.append(point)
+                    continue
+                if point.velocity > 0:
+                    currentMaxVel = point.velocity
+                    if debug: print("Velocity Updated to: {}at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+                # Enforce global max velocity and max reachable velocity by global acceleration limit.
+                # vf = sqrt(vi^2 + 2*a*d)
+                vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
+                point.velocity = vel if vel < currentMaxVel else currentMaxVel
+                pointsNoHeadFWVel.append(point)
+
+            # Stage 3: Backward Pass
+            for point in reversed(pointsNoHeadFWVel):
+                if pointsNoHeadFWVel.index(point) == len(pointsNoHeadFWVel)-1:
+                    currentMaxVel = point.velocity
+                    point.velocity = 0.0
+                    pointsNoHead.insert(0, point)
+                    continue
+                if point.velocity > currentMaxVel:
+                    currentMaxVel = point.velocity
+                    if debug: print("Velocity Updated to: {}at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+                prevPoint = pointsNoHeadFWVel[pointsNoHeadFWVel.index(point)+1]
+                vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
+                if vel > currentMaxVel: vel = currentMaxVel
+                if debug: print("Vel Value {} at Point {}, {} with previous point {}, {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
+                point.velocity = vel if point.velocity > vel else point.velocity
+                pointsNoHead.insert(0, point)
+
+            # DESIGN STANDARD: Any Start Point should have a heading of 0
+            pointsNoHead[0].heading = 0.0
+            
+            # Stage 4: Heading Enforcement
+            # Go through and find the heading changes
+            for point in pointsInput:
+                # Skip 1st Point
+                if pointsInput.index(point) == 0: 
+                    pointIndex = pointsNoHead.index(point)
+                    waypointIndexes.append(pointIndex)
+                    continue
+                prevPoint = pointsInput[pointsInput.index(point)-1]
+                pointIndex = pointsNoHead.index(point)
+                prevPointIndex = pointsNoHead.index(prevPoint)
+                waypointIndexes.append(pointIndex)
+                # Find Left Distance, Find Right Distance, Figure out Which is shorter
+                leftDist = point.heading+360 - prevPoint.heading
+                rightDist = point.heading - prevPoint.heading
+                if point.heading == prevPoint.heading:
+                    # No Heading Change over interval
+                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = 0
+                elif leftDist > rightDist:
+                    # Right is shorter, go right
+                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
+                else:
+                    # Left is shorter, go left
+                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = -((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
+                headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)]] = 0
 
 
-            # go through a loop where each point is at 0.01 meters of distance (x and y) !! apart            
-            for point in np.arange(start=pointsInput[0].point.x, stop=pointsInput[len(pointsInput)-1], step=0.01):
-                ...
+            segmentAngVel = 0
+            prevHeading = 0
+            for point in pointsNoHead:
+                index = pointsNoHead.index(point)
+                if index in waypointIndexes:
+                    print(index)
+                    print(waypointIndexes)
+                    print(headingSlopes)
+                    segmentAngVel = headingSlopes[index]
+                    pointsOutput.append(point)
+                    continue
 
-
-            # nextxvalue = previousxvalue + previousVelocity*tdelta + maxAccel*tdelta^2                
-            # Enforce global max velocity and max reachable velocity by global acceleration limit.
-            # vf = sqrt(vi^2 + 2*a*d)
-
-            # for point in reversed(timeParameterizedPoints):
-            #     velocityVal = math.sqrt(previousVelocity**2 + 2*-segmentAccel*(self.findDistance(prevWaypoint, xval, yval)))
-
-            # for point in timeParameterizedPoints:
-            #     pointsOutput.append(point)    
+                headingVal = prevHeading + segmentAngVel # Heading Calculation using angular velocity
+                if headingVal < 0: headingVal = 360+headingVal # make sure negative headings don't happen
+                point.heading = float(headingVal)
+                pointsOutput.append(point)
+                prevHeading = headingVal               
             response.waypoints = pointsOutput
             return response
         except Exception as e:
