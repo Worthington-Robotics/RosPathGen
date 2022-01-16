@@ -1,3 +1,5 @@
+from asyncio.format_helpers import _format_callback_source
+from textwrap import fill
 from turtle import heading
 import rclpy
 from rclpy.node import Node
@@ -7,6 +9,7 @@ from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 from scipy.optimize import curve_fit
 from scipy.interpolate import CubicHermiteSpline
+from scipy.interpolate import interp1d
 import sys
 import os
 import math
@@ -26,7 +29,7 @@ def findDistance(startx, starty, endx, endy):
     return math.sqrt((endx - startx)**2 + (endy - starty)**2)
 
 # Using a previous x value and a goal distance, finds next x value using slope and euclidian distance
-def nextXPoint(prevx, prevy, goalDist, linear, curve: CubicHermiteSpline, constants=(0,0,0,0)):
+def nextXPoint(prevx, prevy, goalDist, linear, curve, constants=(0,0,0,0)):
     nextX = prevx
     nextY = prevy
     distance = findDistance(prevx, prevy, nextX, nextY)
@@ -83,6 +86,7 @@ class pathGen(Node):
                 constants = slope, intercept
                 if debug: print("Intercept: {}".format(intercept))
                 linear = True
+                curve = 0
             else:
                 constants = 0,0
                 # Get Length to SciPy Minimum of 4
@@ -91,17 +95,20 @@ class pathGen(Node):
                     yvalue = yvalues[0]+yvalues[1]/2
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
+                
                 # Find 1st Derivatives for each segment
-                for waypoint in pointsInput:
-                    if pointsInput.index(waypoint) == len(pointsInput)-1:
+                for xvalue in xvalues:
+                    if xvalues.index(xvalue) == len(xvalues)-1:
                         derivatives.append(0)
                         break
-                    index = pointsInput.index(waypoint)
+                    index = xvalues.index(xvalue)
                     xvalue = xvalues[index]+xvalues[index+1]/2
                     yvalue = yvalues[index]+yvalues[index+1]/2
                     slope = yvalue/xvalue
                     derivatives.append(slope)
-                curve = CubicHermiteSpline(xvalues, yvalues, derivatives)
+                print(xvalues, yvalues, derivatives)
+                #curve = CubicHermiteSpline(xvalues, yvalues, derivatives)
+                curve = interp1d(xvalues, yvalues, kind='cubic', fill_value="extrapolate")
 
             # Stage 1: Get all the points, no headings, no velocities
 
