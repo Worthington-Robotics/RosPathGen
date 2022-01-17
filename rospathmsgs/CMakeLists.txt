@@ -29,8 +29,9 @@ find_package(std_msgs REQUIRED)
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Waypoint.msg"
   "msg/Point.msg"
-  "srv/GeneratePath.srv"
-
+  "srv/BakePath.srv"
+  "srv/GetPath.srv"
+  
   DEPENDENCIES geometry_msgs std_msgs
 )
 

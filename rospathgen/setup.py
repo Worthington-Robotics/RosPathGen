@@ -20,7 +20,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            'pathgenerator = rospathgen.pathgenerator:main',
+            'pathservices = rospathgen.pathservices:main',
             'pathtester = rospathgen.pathtester:main'
         ],
     },
