@@ -3,7 +3,7 @@ from geometry_msgs.msg import Vector3
 from scipy.interpolate import splprep, splev
 import sys, os, math, time
 
-debug = False
+debug = True
 
 # Linear and Cubic Spline Functions for use with SciPy Later on
 def linearSpline(x, a, b):
@@ -19,12 +19,13 @@ def nextUValue(prevU, goalDist, constants=(0,0,0,0)):
     nextU = prevU
     nextX = prevx
     nextY = prevy
-    distance = findDistance(prevx, prevy, nextX, nextY)
-    startTime = time.time()
+    distance = findDistance(prevx, prevy, nextX, nextY) # Find distance between the two points
+    startTime = time.time() # Create timeout limit
     while distance < goalDist and (time.time()-startTime) < 1:
-        nextU += 0.000025 # Increment u by 0.1 mm
-        nextX, nextY = splev(nextU, constants)
-        distance = findDistance(prevx, prevy, nextX, nextY)
+        nextU += 0.000025 # Increment u, any value lower than 0.000025 fails to have appreciable effect on distance 
+                          # without running into more time constraints
+        nextX, nextY = splev(nextU, constants) # Evaluate the next u value with respect to the function
+        distance = findDistance(prevx, prevy, nextX, nextY) # Reevaluate distance between the two points
     return nextU
 
 class PathGenerator(): 
@@ -43,11 +44,11 @@ class PathGenerator():
         waypointIndexes = [] # List of all og waypoint indexes in pointsNoHead
         headingSlopes = {} # Diction in the form finalIndex, slope 
 
-
         """Give a list of waypoints, gives back entire path"""
         try: 
-            #print(request)
-            #print(request.points)
+            pathStartTime = time.time()
+            if debug: print(request)
+            if debug: print(request.points)
             pointsInput = request.points
             for index in range(len(pointsInput)):
                 x = pointsInput[index].point.x
@@ -74,7 +75,7 @@ class PathGenerator():
                     yvalue = yvalues[0]+yvalues[1]/2
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
-                print(xvalues, yvalues) 
+                if debug: print(xvalues, yvalues) 
                 constants, uGiven = splprep([xvalues, yvalues])
 
             # Stage 1: Get all the points, no headings, no velocities
@@ -91,7 +92,7 @@ class PathGenerator():
                 # point is starting point find next x value by integral(a, b, sqrt(1+(f'(x))^2))dx = distance b/w points
                 
                 nextU = nextUValue(prevU, 0.01, constants)
-                startTime = time.time()
+                startTime = time.time() # create timeout condition
                 while nextU < finalU and (time.time()-startTime) < 1:
                     # Make a point at (nextX, yval)
                     xval, yval = splev(nextU, constants) 
@@ -111,7 +112,7 @@ class PathGenerator():
             # Stage 2: Velocity
             # Forward Pass
             
-            currentMaxVel = pointsInput[0].velocity
+            currentMaxVel = maxVelocity
 
             # DESIGN STANDARD: Any Start or End Point should have a velocity of 0
             #pointsInput[0].velocity = 0.0
@@ -143,8 +144,10 @@ class PathGenerator():
                     continue
                 if point.velocity > currentMaxVel:
                     currentMaxVel = point.velocity
-                    if debug: print("Velocity Updated to: {}at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+                    if debug: print("Velocity Updated to: {} at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
                 prevPoint = pointsNoHeadFWVel[pointsNoHeadFWVel.index(point)+1]
+                # Enforce global max velocity and max reachable velocity by global acceleration limit.
+                # vf = sqrt(vi^2 + 2*a*d)
                 vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
                 if vel > currentMaxVel: vel = currentMaxVel
                 if debug: print("Vel Value {} at Point {}, {} with previous point {}, {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
@@ -167,7 +170,7 @@ class PathGenerator():
                 prevPointIndex = pointsNoHead.index(prevPoint)
                 waypointIndexes.append(pointIndex)
                 # Find Left Distance, Find Right Distance, Figure out Which is shorter
-                leftDist = point.heading+360 - prevPoint.heading
+                leftDist = prevPoint.heading - (point.heading-360)
                 rightDist = point.heading - prevPoint.heading
                 if point.heading == prevPoint.heading:
                     # No Heading Change over interval
@@ -177,28 +180,26 @@ class PathGenerator():
                     headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
                 else:
                     # Left is shorter, go left
-                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = -((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
+                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-360)-prevPoint.heading)/(pointIndex-prevPointIndex)
                 headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)]] = 0
 
 
             segmentAngVel = 0
             prevHeading = 0
+            if debug: print(waypointIndexes)
+            if debug: print(headingSlopes)
             for point in pointsNoHead:
                 index = pointsNoHead.index(point)
                 if index in waypointIndexes:
-                    if debug: print(index)
-                    if debug: print(waypointIndexes)
-                    if debug: print(headingSlopes)
-                    segmentAngVel = headingSlopes[index]
+                    segmentAngVel = headingSlopes[index] # update the segment angular velocity if the segment angular velocity exists
                     pointsOutput.append(point)
                     continue
-
                 headingVal = prevHeading + segmentAngVel # Heading Calculation using angular velocity
                 if headingVal < 0: headingVal = 360+headingVal # make sure negative headings don't happen
                 point.heading = float(headingVal)
                 pointsOutput.append(point)
                 prevHeading = headingVal      
-                 
+            print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
             return pointsOutput
         except Exception as e:
             print(e) 

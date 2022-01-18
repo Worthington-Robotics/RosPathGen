@@ -13,29 +13,28 @@ def findDistance(startx, starty, endx, endy):
     return math.sqrt((endx - startx)**2 + (endy - starty)**2)
 
 
-debug = 2 # 1 is nothing but essentials, 2 is somewhat verbose, 3 is everything
+debug = 1 # 1 is nothing but essentials, 2 is somewhat verbose, 3 is everything
 printPoints = True
 printVelocities = True
 printHeadings = True
 graph = True
 
+arbitraryName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
 
-
-arbitraryName = "StringyStr"
 path = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
                  point_name="Start"),
-        Waypoint(point=Vector3(x=3.0, y=2.0, z=0.0), 
+        Waypoint(point=Vector3(x=3.0, y=7.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
-                 point_name="mi"),
-        Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0), 
-                 heading=0.0, 
+                 point_name=""),
+        Waypoint(point=Vector3(x=5.0, y=3.0, z=0.0), 
+                 heading=90.0, 
                  velocity=5.0, 
-                 point_name="mid2"),
-        Waypoint(point=Vector3(x=15.0, y=6.0, z=0.0), 
-                 heading=0.0, 
+                 point_name=""),
+        Waypoint(point=Vector3(x=4.0, y=4.5, z=0.0), 
+                 heading=300.0, 
                  velocity=0.0, 
                  point_name="End")]
 
@@ -79,7 +78,11 @@ def graphOutput(response):
     headings = []
     velocities = []
     time = []
+    originalTimes = []
     wrongDistances = []
+    names = {} # of point(tuple) to name
+
+    originalTimes.append(0)
 
     pointList = response.path
     if debug >= 3: print(pointList)
@@ -97,8 +100,10 @@ def graphOutput(response):
         if point.point_name != "":
             name = point.point_name
             name = str(name)
-            #plt.text(xvals, yvals, name)        
+            names[(point.point.x, point.point.y)] = name       
         if debug >= 2: print("X: {}, Y: {}, Velocity: {}".format(point.point.x, point.point.y, point.velocity))
+        if point in path: 
+            originalTimes.append(currentTime)
     
     for xvalue in xvals:
         index = xvals.index(xvalue)
@@ -110,7 +115,7 @@ def graphOutput(response):
         distance = findDistance(prevxvalue, prevyvalue, xvalue, yvalue)
         if distance > 0.01 or distance < 0.01:
             wrongDistances.append(distance)
-            if debug >= 1: print("Distance between points {}, {} and {}, {} is {}, which is not correct".format(prevxvalue, prevyvalue, xvalue, yvalue, distance))
+            if debug >= 2: print("Distance between points {}, {} and {}, {} is {}, which is not correct".format(prevxvalue, prevyvalue, xvalue, yvalue, distance))
     
     plt.figure()
     if printPoints:
@@ -118,6 +123,9 @@ def graphOutput(response):
         plt.plot(xvals,yvals, 'bo')
         plt.xlabel('X value (m)')
         plt.ylabel('Y value (m)')
+        for point in names.keys():
+            x,y = point
+            plt.text(x+0.6, y-0.3, names[point])
         for point in path:
             plt.plot(point.point.x, point.point.y, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
     if printVelocities:
@@ -131,13 +139,17 @@ def graphOutput(response):
         plt.plot(time,headings, 'bo')
         plt.xlabel('Time')
         plt.ylabel('Heading (deg)')
-    
-    print("Starting Wrong Statistics")
-    print(" ")
-    print("Max: {}".format(max(wrongDistances)))
-    print("Min: {}".format(min(wrongDistances)))
-    print("Std Dev: {}".format(np.std(wrongDistances)))
-    print("Average: {}".format(np.average(wrongDistances)))
+        for point in path:
+            specificTime = originalTimes[path.index(point)]
+            plt.plot(specificTime, point.heading, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
+
+    if debug >= 1:
+        print("Starting Wrong Statistics")
+        print(" ")
+        print("Max: {}".format(max(wrongDistances)))
+        print("Min: {}".format(min(wrongDistances)))
+        print("Std Dev: {}".format(np.std(wrongDistances)))
+        print("Average: {}".format(np.average(wrongDistances)))
 
     if graph:
         plt.show()
@@ -152,13 +164,13 @@ def main():
         rclpy.spin_once(pathTester)       
         if pathTester.initialFuture.done():
             try:
-                response = pathTester.future.result()
+                response = pathTester.initialFuture.result()
             except Exception as e:
                 pathTester.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                print(response.success)
-                if not response.success: print(response.message)
+                if response.success: print("Path successfully completed")
+                else: print("Path unsuccessfully completed with message {}".format(response.message))
             break
     pathTester.sendGetRequest()
     while rclpy.ok():

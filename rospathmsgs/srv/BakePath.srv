@@ -1,7 +1,7 @@
 Waypoint[] points
-float32 max_accel
 float32 max_velocity
 float32 max_angular_vel
+float32 max_accel
 string path_name
 ---
 bool success
