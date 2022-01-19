@@ -1,3 +1,4 @@
+from cgi import test
 import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath
@@ -5,6 +6,7 @@ from rospathmsgs.srv import GetPath
 import numpy as np
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
+import pylab
 import matplotlib.pyplot as plt
 import math
 
@@ -20,8 +22,9 @@ printHeadings = True
 graph = True
 
 arbitraryName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
+path = []
 
-path = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+testingPath = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
                  point_name="Start"),
@@ -38,14 +41,45 @@ path = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
                  velocity=0.0, 
                  point_name="End")]
 
+tenFeetPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=5.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=3.048, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="10 feet")]
+
+philsTestPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=5.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=0.5, y=0.5, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="halfway"),
+                Waypoint(point=Vector3(x=1.0, y=1.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="1 meter")]
+
+
+
+
+
 # Generic Template for a Waypoint
-# Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0), 
-#                  heading=0.0, 
-#                  velocity=5.0, 
-#                  point_name="mid2")
+Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=5.0, 
+                 point_name="mid2")
 
 
+# CHANGE THIS TO CHANGE YOUR PATH
+path = philsTestPath
 
+if path == testingPath: arbitraryName = "Testing Path"
+elif path == tenFeetPath: arbitraryName = "10 Feet Path"
+elif path == philsTestPath: arbitraryName = "Phil's Test Path"
 
 
 class tester(Node):
@@ -152,6 +186,8 @@ def graphOutput(response):
         print("Average: {}".format(np.average(wrongDistances)))
 
     if graph:
+        fig = pylab.gcf()
+        fig.canvas.manager.set_window_title(arbitraryName)
         plt.show()
 
 
