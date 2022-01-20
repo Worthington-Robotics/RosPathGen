@@ -102,8 +102,8 @@ class tester(Node):
     
     def __init__(self):
         super().__init__('path_tester')
-        self.bakeclient = self.create_client(BakePath, 'bake_path')
-        self.getclient = self.create_client(GetPath, 'get_path')
+        self.bakeclient = self.create_client(BakePath, '/bake_path')
+        self.getclient = self.create_client(GetPath, '/get_path')
         self.initrequest = BakePath.Request()
         self.getrequest = GetPath.Request()
 
