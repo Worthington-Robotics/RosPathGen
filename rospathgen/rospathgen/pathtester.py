@@ -54,16 +54,27 @@ tenFeetPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
 philsTestPath = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
-                 velocity=5.0, 
+                 velocity=0.5, 
                  point_name="Start"),
-                Waypoint(point=Vector3(x=0.5, y=0.5, z=0.0), 
+                Waypoint(point=Vector3(x=0.05, y=0.05, z=0.0), 
                  heading=0.0, 
-                 velocity=3.5, 
+                 velocity=0.5, 
                  point_name="halfway"),
-                Waypoint(point=Vector3(x=1.0, y=1.0, z=0.0), 
+                Waypoint(point=Vector3(x=0.1, y=0.1, z=0.0), 
                  heading=0.0, 
                  velocity=0.0, 
                  point_name="1 meter")]
+
+
+sixCentimeters = [
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.5, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=0.06, y=0.06, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="6 cm")]
 
 threePointCurvy = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
@@ -79,10 +90,6 @@ threePointCurvy = [
                  velocity=0.0, 
                  point_name="1 meter")]
 
-
-
-
-
 # Generic Template for a Waypoint
 Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0), 
                  heading=0.0, 
@@ -90,12 +97,20 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
                  point_name="mid2")
 
 
+
+
+
 # CHANGE THIS TO CHANGE YOUR PATH
-path = threePointCurvy
+path = sixCentimeters
+max_velocity = 5.5 # m/s
+max_accel = 1.0 # m/s/s
+max_angular_vel = 90.0 # deg / s 
+
 
 if path == testingPath: arbitraryName = "Testing Path"
 elif path == tenFeetPath: arbitraryName = "10 Feet Path"
 elif path == philsTestPath: arbitraryName = "Phil's Test Path"
+elif path == sixCentimeters: arbitraryName = "six"
 
 
 class tester(Node):
@@ -113,7 +128,7 @@ class tester(Node):
         self.initrequest.points = path
         self.initrequest.path_name = arbitraryName
         self.initrequest.max_velocity = 5.5 # m/s
-        self.initrequest.max_accel = 4.0 # m/s/s
+        self.initrequest.max_accel = 1.0 # m/s/s
         self.initrequest.max_angular_vel = 90.0 # deg / s 
         self.initialFuture = self.bakeclient.call_async(self.initrequest)
 
