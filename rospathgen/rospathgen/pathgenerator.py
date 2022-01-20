@@ -64,7 +64,7 @@ class PathGenerator():
             
 
             # Scipy implementation of Curve Fitting
-            if len(pointsInput) < 3:
+            if len(pointsInput) <= 3:
                 # Linear Path
                 constants, uGiven = splprep([xvalues, yvalues], k=1)
             else:
