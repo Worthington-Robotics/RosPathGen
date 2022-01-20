@@ -90,7 +90,6 @@ class PathGenerator():
                 finalU = uGiven[pointsInput.index(point)]
                 # go through a loop where each point is at 0.01 meters of distance (x and y) !! apart
                 # point is starting point find next x value by integral(a, b, sqrt(1+(f'(x))^2))dx = distance b/w points
-                
                 nextU = nextUValue(prevU, 0.01, constants)
                 startTime = time.time() # create timeout condition
                 while nextU < finalU and (time.time()-startTime) < 1:

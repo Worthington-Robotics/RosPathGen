@@ -30,7 +30,7 @@ testingPath = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
                  point_name="Start"),
         Waypoint(point=Vector3(x=3.0, y=7.0, z=0.0), 
                  heading=0.0, 
-                 velocity=5.0, 
+                 velocity=3.5, 
                  point_name=""),
         Waypoint(point=Vector3(x=5.0, y=3.0, z=0.0), 
                  heading=90.0, 
@@ -56,7 +56,7 @@ philsTestPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
                  point_name="Start"),
                 Waypoint(point=Vector3(x=0.5, y=0.5, z=0.0), 
                  heading=0.0, 
-                 velocity=0.0, 
+                 velocity=3.5, 
                  point_name="halfway"),
                 Waypoint(point=Vector3(x=1.0, y=1.0, z=0.0), 
                  heading=0.0, 
@@ -173,9 +173,10 @@ def graphOutput(response):
         plt.plot(time,headings, 'bo')
         plt.xlabel('Time')
         plt.ylabel('Heading (deg)')
-        for point in path:
-            specificTime = originalTimes[path.index(point)]
-            plt.plot(specificTime, point.heading, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
+        # for point in path:
+        #     if debug >= 0: print(originalTimes)
+        #     specificTime = originalTimes[path.index(point)]
+        #     plt.plot(specificTime, point.heading, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
 
     if debug >= 1:
         print("Starting Wrong Statistics")
