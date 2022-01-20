@@ -1,9 +1,10 @@
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 from scipy.interpolate import splprep, splev
+import numpy as np
 import sys, os, math, time
 
-debug = True
+debug = False
 
 # Linear and Cubic Spline Functions for use with SciPy Later on
 def linearSpline(x, a, b):
@@ -64,8 +65,8 @@ class PathGenerator():
             
 
             # Scipy implementation of Curve Fitting
-            if len(pointsInput) <= 3:
-                # Linear Path
+            if len(pointsInput) < 3:
+                # Linear Paths
                 constants, uGiven = splprep([xvalues, yvalues], k=1)
             else:
                 constants = 0,0
@@ -77,9 +78,9 @@ class PathGenerator():
                     yvalues.insert(1, yvalue)
                 if debug: print(xvalues, yvalues) 
                 constants, uGiven = splprep([xvalues, yvalues])
-
+                uGiven = np.delete(uGiven, 1)
+            
             # Stage 1: Get all the points, no headings, no velocities
-
             for point in pointsInput:
                 if pointsInput.index(point) == 0: 
                     pointsNoHeadNoVel.append(point)

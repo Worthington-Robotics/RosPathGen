@@ -24,7 +24,8 @@ graph = True
 arbitraryName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
 path = []
 
-testingPath = [Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+testingPath = [
+        Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
                  point_name="Start"),
@@ -50,7 +51,8 @@ tenFeetPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
                  velocity=0.0, 
                  point_name="10 feet")]
 
-philsTestPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+philsTestPath = [ 
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
                  point_name="Start"),
@@ -59,6 +61,20 @@ philsTestPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0),
                  velocity=3.5, 
                  point_name="halfway"),
                 Waypoint(point=Vector3(x=1.0, y=1.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="1 meter")]
+
+threePointCurvy = [ 
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=5.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=0.5, y=0.5, z=0.0), 
+                 heading=0.0, 
+                 velocity=3.5, 
+                 point_name="halfway"),
+                Waypoint(point=Vector3(x=0.0, y=1.0, z=0.0), 
                  heading=0.0, 
                  velocity=0.0, 
                  point_name="1 meter")]
@@ -75,7 +91,7 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = philsTestPath
+path = threePointCurvy
 
 if path == testingPath: arbitraryName = "Testing Path"
 elif path == tenFeetPath: arbitraryName = "10 Feet Path"
