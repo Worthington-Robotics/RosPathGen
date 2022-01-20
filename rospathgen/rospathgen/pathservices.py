@@ -1,7 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from rospathmsgs.srv import BakePath
-from rospathmsgs.srv import GetPath
+from rospathmsgs.srv import BakePath, GetPath
 from rospathgen.pathgenerator import PathGenerator
 import os, sys
 

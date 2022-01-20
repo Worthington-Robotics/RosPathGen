@@ -1,14 +1,10 @@
-from cgi import test
-import rclpy
+import rclpy, pylab, math
 from rclpy.node import Node
-from rospathmsgs.srv import BakePath
-from rospathmsgs.srv import GetPath
-import numpy as np
+from rospathmsgs.srv import BakePath, GetPath
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
-import pylab
+import numpy as np
 import matplotlib.pyplot as plt
-import math
 
 # Find Distance between 2 x and y values
 def findDistance(startx, starty, endx, endy):
@@ -21,28 +17,29 @@ printVelocities = True
 printHeadings = True
 graph = True
 
-arbitraryName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
+pathName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
 path = []
 
 testingPath = [
-        Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
-                 heading=0.0, 
-                 velocity=5.0, 
-                 point_name="Start"),
-        Waypoint(point=Vector3(x=3.0, y=7.0, z=0.0), 
-                 heading=0.0, 
-                 velocity=3.5, 
-                 point_name=""),
-        Waypoint(point=Vector3(x=5.0, y=3.0, z=0.0), 
-                 heading=90.0, 
-                 velocity=5.0, 
-                 point_name=""),
-        Waypoint(point=Vector3(x=4.0, y=4.5, z=0.0), 
-                 heading=300.0, 
-                 velocity=0.0, 
-                 point_name="End")]
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                        heading=0.0, 
+                        velocity=5.0, 
+                        point_name="Start"),
+                Waypoint(point=Vector3(x=3.0, y=7.0, z=0.0), 
+                        heading=0.0, 
+                        velocity=3.5, 
+                        point_name=""),
+                Waypoint(point=Vector3(x=5.0, y=3.0, z=0.0), 
+                        heading=90.0, 
+                        velocity=5.0, 
+                        point_name=""),
+                Waypoint(point=Vector3(x=4.0, y=4.5, z=0.0), 
+                        heading=300.0, 
+                        velocity=0.0, 
+                        point_name="End")]
 
-tenFeetPath = [ Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+tenFeetPath = [ 
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=5.0, 
                  point_name="Start"),
@@ -71,7 +68,7 @@ sixCentimeters = [
                  heading=0.0, 
                  velocity=0.5, 
                  point_name="Start"),
-                Waypoint(point=Vector3(x=0.06, y=0.06, z=0.0), 
+                Waypoint(point=Vector3(x=0.06, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=0.0, 
                  point_name="6 cm")]
@@ -101,16 +98,16 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = sixCentimeters
+path = philsTestPath
 max_velocity = 5.5 # m/s
 max_accel = 1.0 # m/s/s
 max_angular_vel = 90.0 # deg / s 
 
-
-if path == testingPath: arbitraryName = "Testing Path"
-elif path == tenFeetPath: arbitraryName = "10 Feet Path"
-elif path == philsTestPath: arbitraryName = "Phil's Test Path"
-elif path == sixCentimeters: arbitraryName = "six"
+# Set Names Specifically when baking
+if path == testingPath: pathName = "Testing Path"
+elif path == tenFeetPath: pathName = "10 Feet Path"
+elif path == philsTestPath: pathName = "Phil's Test Path"
+elif path == sixCentimeters: pathName = "six"
 
 
 class tester(Node):
@@ -126,14 +123,14 @@ class tester(Node):
         # Add point to list in format 
         # Waypoint(Vector3(x, y, z), heading, velocity, point_name)
         self.initrequest.points = path
-        self.initrequest.path_name = arbitraryName
+        self.initrequest.path_name = pathName
         self.initrequest.max_velocity = 5.5 # m/s
         self.initrequest.max_accel = 1.0 # m/s/s
         self.initrequest.max_angular_vel = 90.0 # deg / s 
         self.initialFuture = self.bakeclient.call_async(self.initrequest)
 
     def sendGetRequest(self):
-        self.getrequest.path_name = arbitraryName
+        self.getrequest.path_name = pathName
         self.secondFuture = self.getclient.call_async(self.getrequest)
 
 
@@ -219,7 +216,7 @@ def graphOutput(response):
 
     if graph:
         fig = pylab.gcf()
-        fig.canvas.manager.set_window_title(arbitraryName)
+        fig.canvas.manager.set_window_title(pathName)
         plt.show()
 
 
