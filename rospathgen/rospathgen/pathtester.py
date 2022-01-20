@@ -98,7 +98,7 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = philsTestPath
+path = sixCentimeters
 max_velocity = 5.5 # m/s
 max_accel = 1.0 # m/s/s
 max_angular_vel = 90.0 # deg / s 
