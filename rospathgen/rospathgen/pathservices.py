@@ -2,6 +2,8 @@ import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath
 from rospathgen.pathgenerator import PathGenerator
+from rospathmsgs.msg import Waypoint
+from geometry_msgs.msg import Vector3
 import os, sys
 
 generator = PathGenerator()
@@ -30,8 +32,17 @@ class pathServices(Node):
         
     def getPathCallback(self, request, response):
         name = request.path_name
-        path = self.nameToPath[name]
-        response.path = path
+        try: 
+            path = self.nameToPath[name]
+            response.path = path
+            print("Sucessfully found path with name {}".format(name))
+        except Exception as e:
+            print(e)
+            print("Did not find path with name {}".format(name))
+            response = Waypoint[Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                                heading=0.0, 
+                                velocity=0.0, 
+                                point_name="Broken")]
         return response
 
 

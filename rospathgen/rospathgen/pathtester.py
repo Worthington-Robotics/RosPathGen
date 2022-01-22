@@ -41,12 +41,22 @@ testingPath = [
 tenFeetPath = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
-                 velocity=5.0, 
+                 velocity=1.0, 
                  point_name="Start"),
                 Waypoint(point=Vector3(x=3.048, y=0.0, z=0.0), 
                  heading=0.0, 
                  velocity=0.0, 
                  point_name="10 feet")]
+
+testCurvy = [ 
+                Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=1.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=3.048, y=0.6096, z=0.0), 
+                 heading=0.0, 
+                 velocity=0.0, 
+                 point_name="10 ft, 2 ft")]
 
 philsTestPath = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
@@ -98,16 +108,17 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = sixCentimeters
+path = tenFeetPath
+pathName = "six"
 max_velocity = 5.5 # m/s
 max_accel = 1.0 # m/s/s
 max_angular_vel = 90.0 # deg / s 
 
 # Set Names Specifically when baking
-if path == testingPath: pathName = "Testing Path"
-elif path == tenFeetPath: pathName = "10 Feet Path"
-elif path == philsTestPath: pathName = "Phil's Test Path"
-elif path == sixCentimeters: pathName = "six"
+# if path == testingPath: pathName = "Testing Path"
+# elif path == tenFeetPath: pathName = "six"
+# elif path == philsTestPath: pathName = "Phil's Test Path"
+# elif path == sixCentimeters: pathName = "six"
 
 
 class tester(Node):
