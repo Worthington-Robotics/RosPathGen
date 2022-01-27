@@ -4,11 +4,8 @@ from scipy.interpolate import splprep, splev
 import numpy as np
 import sys, os, math, time
 
-debug = False
 
-# Linear and Cubic Spline Functions for use with SciPy Later on
-def linearSpline(x, a, b):
-    return a*x + b
+debug = False
 
 # Find Distance between 2 x and y values
 def findDistance(startx, starty, endx, endy):
@@ -61,8 +58,6 @@ class PathGenerator():
             maxAccel = request.max_accel   
             maxVelocity = request.max_velocity
             maxAngularVelocity = request.max_angular_vel  
-
-            
 
             # Scipy implementation of Curve Fitting
             if len(pointsInput) < 3:
@@ -186,6 +181,9 @@ class PathGenerator():
 
             segmentAngVel = 0
             prevHeading = 0
+            # max angular velocity support
+            for AngVel in headingSlopes:
+                if AngVel > maxAngularVelocity: AngVel = maxAngularVelocity
             if debug: print(waypointIndexes)
             if debug: print(headingSlopes)
             for point in pointsNoHead:
