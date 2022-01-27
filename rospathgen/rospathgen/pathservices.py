@@ -39,12 +39,9 @@ class pathServices(Node):
         except Exception as e:
             print(e)
             print("Did not find path with name {}".format(name))
-            response = Waypoint[Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
-                                heading=0.0, 
-                                velocity=0.0, 
-                                point_name="Broken")]
+            print("Did you remember to create said path?")
+            response = []
         return response
-
 
     def __init__(self):
         super().__init__('pathGen')
