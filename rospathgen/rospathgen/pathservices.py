@@ -2,8 +2,6 @@ import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath
 from rospathgen.pathgenerator import PathGenerator
-from rospathmsgs.msg import Waypoint
-from geometry_msgs.msg import Vector3
 import os, sys
 
 generator = PathGenerator()
@@ -39,12 +37,9 @@ class pathServices(Node):
         except Exception as e:
             print(e)
             print("Did not find path with name {}".format(name))
-            response = Waypoint[Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
-                                heading=0.0, 
-                                velocity=0.0, 
-                                point_name="Broken")]
+            print("Did you remember to create said path?")
+            response = []
         return response
-
 
     def __init__(self):
         super().__init__('pathGen')
@@ -58,11 +53,6 @@ def main(args=None):
     rclpy.spin(pathgen)
     pathgen.destroy_node()
     rclpy.shutdown()
-
-
-if __name__ == '__main__':
-    main()
-
 
 
 if __name__ == '__main__':

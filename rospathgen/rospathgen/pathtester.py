@@ -66,16 +66,20 @@ testCurvy = [
 philsTestPath = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
-                 velocity=0.5, 
+                 velocity=2.0, 
                  point_name="Start"),
-                Waypoint(point=Vector3(x=0.05, y=0.05, z=0.0), 
+                Waypoint(point=Vector3(x=5.0, y=1.0, z=0.0), 
                  heading=0.0, 
-                 velocity=0.5, 
-                 point_name="halfway"),
-                Waypoint(point=Vector3(x=0.1, y=0.1, z=0.0), 
+                 velocity=2.0, 
+                 point_name="2"),
+                Waypoint(point=Vector3(x=3.0, y=-2.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="3"),
+                Waypoint(point=Vector3(x=1.0, y=-3.0, z=0.0), 
                  heading=0.0, 
                  velocity=0.0, 
-                 point_name="1 meter")]
+                 point_name="End")]
 
 
 sixCentimeters = [
@@ -113,17 +117,19 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = tenFeetPath
+path = philsTestPath
 pathName = "six"
 max_velocity = 5.5 # m/s
 max_accel = 5.0 # m/s/s
 max_angular_vel = 90.0 # deg / s 
 
 # Set Names Specifically when baking
-# if path == testingPath: pathName = "Testing Path"
-# elif path == tenFeetPath: pathName = "six"
-# elif path == philsTestPath: pathName = "Phil's Test Path"
-# elif path == sixCentimeters: pathName = "six"
+if path == testingPath: pathName = "Testing Path"
+elif path == tenFeetPath: pathName = "six"
+elif path == philsTestPath: pathName = "Phil's Test Path"
+elif path == sixCentimeters: pathName = "six"
+else: pathName = "Arbitrary Path"
+
 
 
 class tester(Node):
@@ -222,13 +228,13 @@ def graphOutput(response):
         #     specificTime = originalTimes[path.index(point)]
         #     plt.plot(specificTime, point.heading, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
 
-    #if debug >= 1:
-    #    print("Starting Wrong Statistics")
-    #    print(" ")
-    #    print("Max: {}".format(max(wrongDistances)))
-    #    print("Min: {}".format(min(wrongDistances)))
-    #    print("Std Dev: {}".format(np.std(wrongDistances)))
-    #    print("Average: {}".format(np.average(wrongDistances)))
+    if debug >= 1 and len(wrongDistances) != 0:
+        print("Starting Wrong Statistics")
+        print(" ")
+        print("Max: {}".format(max(wrongDistances)))
+        print("Min: {}".format(min(wrongDistances)))
+        print("Std Dev: {}".format(np.std(wrongDistances)))
+        print("Average: {}".format(np.average(wrongDistances)))
 
     if graph:
         fig = pylab.gcf()
