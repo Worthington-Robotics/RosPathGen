@@ -43,10 +43,15 @@ tenFeetPath = [
                  heading=0.0, 
                  velocity=1.0, 
                  point_name="Start"),
-                Waypoint(point=Vector3(x=3.048, y=0.0, z=0.0), 
+                Waypoint(point=Vector3(x=4.0, y=1.0, z=0.0), 
                  heading=0.0, 
-                 velocity=0.0, 
-                 point_name="10 feet")]
+                 velocity=2.0, 
+                 point_name="bend"),
+                 Waypoint(point=Vector3(x=3.0, y=-2.0, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="bendy")
+]
 
 testCurvy = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
@@ -111,7 +116,7 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 path = tenFeetPath
 pathName = "six"
 max_velocity = 5.5 # m/s
-max_accel = 1.0 # m/s/s
+max_accel = 5.0 # m/s/s
 max_angular_vel = 90.0 # deg / s 
 
 # Set Names Specifically when baking
@@ -135,8 +140,8 @@ class tester(Node):
         # Waypoint(Vector3(x, y, z), heading, velocity, point_name)
         self.initrequest.points = path
         self.initrequest.path_name = pathName
-        self.initrequest.max_velocity = 5.5 # m/s
-        self.initrequest.max_accel = 1.0 # m/s/s
+        self.initrequest.max_velocity = max_velocity # m/s
+        self.initrequest.max_accel = max_accel # m/s/s
         self.initrequest.max_angular_vel = 90.0 # deg / s 
         self.initialFuture = self.bakeclient.call_async(self.initrequest)
 
@@ -217,13 +222,13 @@ def graphOutput(response):
         #     specificTime = originalTimes[path.index(point)]
         #     plt.plot(specificTime, point.heading, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
 
-    if debug >= 1:
-        print("Starting Wrong Statistics")
-        print(" ")
-        print("Max: {}".format(max(wrongDistances)))
-        print("Min: {}".format(min(wrongDistances)))
-        print("Std Dev: {}".format(np.std(wrongDistances)))
-        print("Average: {}".format(np.average(wrongDistances)))
+    #if debug >= 1:
+    #    print("Starting Wrong Statistics")
+    #    print(" ")
+    #    print("Max: {}".format(max(wrongDistances)))
+    #    print("Min: {}".format(min(wrongDistances)))
+    #    print("Std Dev: {}".format(np.std(wrongDistances)))
+    #    print("Average: {}".format(np.average(wrongDistances)))
 
     if graph:
         fig = pylab.gcf()
