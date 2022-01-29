@@ -2,8 +2,6 @@ import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath
 from rospathgen.pathgenerator import PathGenerator
-from rospathmsgs.msg import Waypoint
-from geometry_msgs.msg import Vector3
 import os, sys
 
 generator = PathGenerator()

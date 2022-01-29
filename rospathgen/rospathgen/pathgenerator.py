@@ -62,13 +62,13 @@ class PathGenerator():
             # Scipy implementation of Curve Fitting
             if len(pointsInput) < 3:
                 # Linear Paths
-                constants, uGiven = splprep([xvalues, yvalues], k=1)
+                constants, uGiven = splprep([xvalues, yvalues], k = 1)
             else:
                 constants = 0,0
                 # Get Length to SciPy Minimum of 4
                 if len(xvalues) < 4:
-                    xvalue = xvalues[0]+xvalues[1]/2
-                    yvalue = yvalues[0]+yvalues[1]/2
+                    xvalue = xvalues[0] + xvalues[1] / 2
+                    yvalue = yvalues[0] + yvalues[1] / 2
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
                 if debug: print(xvalues, yvalues) 
@@ -80,23 +80,23 @@ class PathGenerator():
                 if pointsInput.index(point) == 0: 
                     pointsNoHeadNoVel.append(point)
                     continue
-                prevPoint = pointsInput[pointsInput.index(point)-1]
-                prevIndex = pointsInput.index(point)-1
+                prevPoint = pointsInput[pointsInput.index(point) - 1]
+                prevIndex = pointsInput.index(point) - 1
                 prevU = uGiven[prevIndex]
                 finalU = uGiven[pointsInput.index(point)]
                 # go through a loop where each point is at 0.01 meters of distance (x and y) !! apart
                 # point is starting point find next x value by integral(a, b, sqrt(1+(f'(x))^2))dx = distance b/w points
                 nextU = nextUValue(prevU, 0.01, constants)
                 startTime = time.time() # create timeout condition
-                while nextU < finalU and (time.time()-startTime) < 1:
+                while nextU < finalU and (time.time() - startTime) < 1:
                     # Make a point at (nextX, yval)
                     xval, yval = splev(nextU, constants) 
                     # y val calculated from curve fitted earlier 
                     if debug: print("xval: {} yval: {}".format(xval, yval))
-                    nextPoint = Waypoint(point=Vector3(x= float(xval), y=float(yval), z=0.0), 
-                                        heading= 0.0,  
-                                        velocity= 0.0,
-                                        point_name= "")
+                    nextPoint = Waypoint(point = Vector3(x = float(xval), y = float(yval), z = 0.0), 
+                                        heading = 0.0,  
+                                        velocity = 0.0,
+                                        point_name = "")
                     pointsNoHeadNoVel.append(nextPoint)
                     # Find the next x value
                     prevU = nextU
@@ -111,28 +111,30 @@ class PathGenerator():
 
             # DESIGN STANDARD: Any Start or End Point should have a velocity of 0
             #pointsInput[0].velocity = 0.0
-            pointsInput[len(pointsInput)-1].velocity = 0.0
+            pointsInput[-1].velocity = 0.0
             
+            # Turn no headings/velocity into forward pass w/ velocity
             for point in pointsNoHeadNoVel:
-                prevPoint = pointsNoHeadNoVel[pointsNoHeadNoVel.index(point)-1]
                 if pointsNoHeadNoVel.index(point) == 0:
-                    if debug: print("Reset Max Velocity to 0 at point ({},{})".format(point.point.x, point.point.y))
+                    if debug: print(f"Reset Max Velocity to 0 at point ({point.point.x},{point.point.y})")
                     currentMaxVel = point.velocity
                     point.velocity = 0.0
                     pointsNoHeadFWVel.append(point)
                     continue
+                prevPoint = pointsNoHeadNoVel[pointsNoHeadNoVel.index(point) - 1]
                 if point.velocity > 0:
                     currentMaxVel = point.velocity
-                    if debug: print("Velocity Updated to: {}at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+                    if debug: print(f"Velocity Updated to: {currentMaxVel} at point ({point.point.x},{point.point.y})")
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
-                vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
+                vel = math.sqrt(prevPoint.velocity**2 + 2 * maxAccel)
+                # If less than max, use it, else, use max.
                 point.velocity = vel if vel < currentMaxVel else currentMaxVel
                 pointsNoHeadFWVel.append(point)
 
             # Stage 3: Backward Pass
             for point in reversed(pointsNoHeadFWVel):
-                if pointsNoHeadFWVel.index(point) == len(pointsNoHeadFWVel)-1:
+                if reversed(pointsNoHeadFWVel).index(point) == 0:
                     currentMaxVel = point.velocity
                     point.velocity = 0.0
                     pointsNoHead.insert(0, point)
