@@ -251,7 +251,7 @@ def main():
                 pathTester.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                if response.success: print("Path successfully completed")
+                if response.success and len(response.path) != len(path): print("Path successfully completed")
                 else: print("Path unsuccessfully completed with message {}".format(response.message))
             break
     pathTester.sendGetRequest()
