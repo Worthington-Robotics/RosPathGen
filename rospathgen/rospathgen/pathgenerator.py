@@ -1,3 +1,4 @@
+from multiprocessing.dummy import current_process
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 from scipy.interpolate import splprep, splev
@@ -73,7 +74,7 @@ class PathGenerator():
                     yvalues.insert(1, yvalue)
                 if debug: print(xvalues, yvalues) 
                 constants, uGiven = splprep([xvalues, yvalues])
-                uGiven = np.delete(uGiven, 1)
+                if len(xvalues) < 4: uGiven = np.delete(uGiven, 1)
             
             # Stage 1: Get all the points, no headings, no velocities
             for point in pointsInput:
@@ -133,8 +134,11 @@ class PathGenerator():
                 pointsNoHeadFWVel.append(point)
 
             # Stage 3: Backward Pass
-            for point in reversed(pointsNoHeadFWVel):
-                if reversed(pointsNoHeadFWVel).index(point) == 0:
+            reversedPointsNoHeadFWVel = pointsNoHeadFWVel
+            reversedPointsNoHeadFWVel.reverse()
+            for point in reversedPointsNoHeadFWVel:
+                currentIndex = reversedPointsNoHeadFWVel.index(point)
+                if currentIndex == 0:
                     currentMaxVel = point.velocity
                     point.velocity = 0.0
                     pointsNoHead.insert(0, point)
@@ -142,7 +146,7 @@ class PathGenerator():
                 if point.velocity > currentMaxVel:
                     currentMaxVel = point.velocity
                     if debug: print("Velocity Updated to: {} at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
-                prevPoint = pointsNoHeadFWVel[pointsNoHeadFWVel.index(point)+1]
+                prevPoint = reversedPointsNoHeadFWVel[currentIndex-1]
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
                 vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
