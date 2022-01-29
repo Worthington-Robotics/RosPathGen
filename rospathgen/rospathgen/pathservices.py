@@ -9,28 +9,17 @@ generator = PathGenerator()
 class pathServices(Node):
     nameToPath = {}
     def bakePathCallback(self, request, response):
-        try:
-            print("I've got the path, am working on it, please don't stop me now.")
-            name = request.path_name
-            path = generator.generatePath(request)
-            if len(path) == len(request.path):
-                response.success = False
-                response.message = "Your path could not successfully be generated please contact Tyler and check the output previous to this message."
-                return response
-            self.nameToPath[name] = path
-            response.success = True
-            print("Successfully obtained path")
-            return response
-        except Exception as e:
-            print(e) 
-            print("i did a dumb")
-            exc_type, exc_obj, exc_tb = sys.exc_info()
-            fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            errorMsg = str(exc_type) + str(fname) + str(exc_tb.tb_lineno)
-            print(errorMsg)
+        print("I've got the path, am working on it, please don't stop me now.")
+        name = request.path_name
+        path = generator.generatePath(request)
+        if len(path) == len(request.path):
             response.success = False
-            response.message = errorMsg
+            response.message = "Your path could not successfully be generated please contact Tyler and check the output previous to this message."
             return response
+        self.nameToPath[name] = path
+        response.success = True
+        print("Successfully obtained path")
+        return response
         
     def getPathCallback(self, request, response):
         name = request.path_name
