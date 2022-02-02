@@ -37,6 +37,7 @@ class PathGenerator():
         pointsOutput = [] # Output list of points with heading and velocity
         maxAccel = 8 # Max Acceleration (Default)
         maxVelocity = 10 # Max Velocity (Default)
+        timeLimit = 500 #Amount of iterations before the velocity assigner gives up
         # X and Y Seperated Input Values
         xvalues = []
         yvalues = []
@@ -115,6 +116,7 @@ class PathGenerator():
             pointsInput[-1].velocity = 0.0
             
             # Turn no headings/velocity into forward pass w/ velocity
+            timeElapsed = 0
             for point in pointsNoHeadNoVel:
                 if pointsNoHeadNoVel.index(point) == 0:
                     if debug: print(f"Reset Max Velocity to 0 at point ({point.point.x},{point.point.y})")
@@ -126,16 +128,23 @@ class PathGenerator():
                 if point.velocity > 0:
                     currentMaxVel = point.velocity
                     if debug: print(f"Velocity Updated to: {currentMaxVel} at point ({point.point.x},{point.point.y})")
+                distance = abs(findDistance(point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
-                vel = math.sqrt(prevPoint.velocity**2 + 2 * maxAccel)
+                vel = math.sqrt(prevPoint.velocity ** 2 + 2 * maxAccel * distance)
                 # If less than max, use it, else, use max.
                 point.velocity = vel if vel < currentMaxVel else currentMaxVel
+                # If path is not feasible, abort
+                timeDelta = (point.velocity + prevPoint.velocity) / 2 * distance
+                timeElapsed += timeDelta
+                if timeElapsed > timeLimit: return []
                 pointsNoHeadFWVel.append(point)
 
             # Stage 3: Backward Pass
             reversedPointsNoHeadFWVel = pointsNoHeadFWVel
             reversedPointsNoHeadFWVel.reverse()
+
+            timeElapsed = 0
             for point in reversedPointsNoHeadFWVel:
                 currentIndex = reversedPointsNoHeadFWVel.index(point)
                 if currentIndex == 0:
@@ -147,12 +156,17 @@ class PathGenerator():
                     currentMaxVel = point.velocity
                     if debug: print("Velocity Updated to: {} at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
                 prevPoint = reversedPointsNoHeadFWVel[currentIndex-1]
+                distance = abs(findDistance(point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
-                vel = math.sqrt(prevPoint.velocity**2 + 2*maxAccel)
+                vel = math.sqrt(prevPoint.velocity ** 2 + 2 * maxAccel * distance)
                 if vel > currentMaxVel: vel = currentMaxVel
                 if debug: print("Vel Value {} at Point {}, {} with previous point {}, {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 point.velocity = vel if point.velocity > vel else point.velocity
+                # If path is not feasible, abort
+                timeDelta = (point.velocity + prevPoint.velocity) / 2 * distance
+                timeElapsed += timeDelta
+                if timeElapsed > timeLimit: return []
                 pointsNoHead.insert(0, point)
 
             # DESIGN STANDARD: Any Start Point should have a heading of 0
