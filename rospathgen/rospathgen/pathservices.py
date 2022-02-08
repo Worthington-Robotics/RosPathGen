@@ -12,7 +12,7 @@ class pathServices(Node):
         print("I've got the path, am working on it, please don't stop me now.")
         name = request.path_name
         path = generator.generatePath(request)
-        if len(path) == len(request.points):
+        if len(path) == len(request.points) or len(request.points) == 0:
             response.success = False
             response.message = "Your path could not successfully be generated please contact Tyler and check the output previous to this message."
             return response

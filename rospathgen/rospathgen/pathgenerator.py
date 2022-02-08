@@ -104,11 +104,11 @@ class PathGenerator():
                     prevU = nextU
                     nextU = nextUValue(prevU, 0.01, constants)
                 pointsNoHeadNoVel.append(point)
-            
+            print("Stage One Time:", time.time() - startTime)
+            startTime = time.time()    
             
             # Stage 2: Velocity
             # Forward Pass
-            
             currentMaxVel = maxVelocity
 
             # DESIGN STANDARD: Any Start or End Point should have a velocity of 0
@@ -116,7 +116,7 @@ class PathGenerator():
             pointsInput[-1].velocity = 0.0
             
             # Turn no headings/velocity into forward pass w/ velocity
-            timeElapsed = 0
+            timeElapsed = 0 
             for point in pointsNoHeadNoVel:
                 if pointsNoHeadNoVel.index(point) == 0:
                     if debug: print(f"Reset Max Velocity to 0 at point ({point.point.x},{point.point.y})")
@@ -135,16 +135,21 @@ class PathGenerator():
                 # If less than max, use it, else, use max.
                 point.velocity = vel if vel < currentMaxVel else currentMaxVel
                 # If path is not feasible, abort
-                timeDelta = (point.velocity + prevPoint.velocity) / 2 * distance
+                timeDelta = (2 / (point.velocity + prevPoint.velocity)) * distance
                 timeElapsed += timeDelta
-                if timeElapsed > timeLimit: return []
+                if timeElapsed > timeLimit:
+                    print("Stage Two Time but path isn't acceptable:", time.time() - startTime)
+                    startTime = time.time()
+                    return request.points
                 pointsNoHeadFWVel.append(point)
+            print("Stage Two Time:", time.time() - startTime)
+            startTime = time.time()
 
             # Stage 3: Backward Pass
             reversedPointsNoHeadFWVel = pointsNoHeadFWVel
             reversedPointsNoHeadFWVel.reverse()
 
-            timeElapsed = 0
+            timeElapsed = 0 
             for point in reversedPointsNoHeadFWVel:
                 currentIndex = reversedPointsNoHeadFWVel.index(point)
                 if currentIndex == 0:
@@ -164,16 +169,22 @@ class PathGenerator():
                 if debug: print("Vel Value {} at Point {}, {} with previous point {}, {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 point.velocity = vel if point.velocity > vel else point.velocity
                 # If path is not feasible, abort
-                timeDelta = (point.velocity + prevPoint.velocity) / 2 * distance
+                timeDelta = (2/(point.velocity + prevPoint.velocity))* distance
                 timeElapsed += timeDelta
-                if timeElapsed > timeLimit: return []
+                if timeElapsed > timeLimit: 
+                    print("Stage Three Time but the path isn't acceptable:", time.time() - startTime)
+                    startTime = time.time()
+                    return request.points
                 pointsNoHead.insert(0, point)
+            print("Stage Three Time:", time.time() - startTime)
+            startTime = time.time()
 
             # DESIGN STANDARD: Any Start Point should have a heading of 0
             pointsNoHead[0].heading = 0.0
             
             # Stage 4: Heading Enforcement
             # Go through and find the heading changes
+  
             for point in pointsInput:
                 # Skip 1st Point
                 if pointsInput.index(point) == 0: 
@@ -216,8 +227,9 @@ class PathGenerator():
                 if headingVal < 0: headingVal = 360+headingVal # make sure negative headings don't happen
                 point.heading = float(headingVal)
                 pointsOutput.append(point)
-                prevHeading = headingVal      
-            print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
+                prevHeading = headingVal  
+            print("Stage Four Time:", time.time() - startTime)    
+            #print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
             return pointsOutput
         except Exception as e:
             print(e) 
