@@ -21,7 +21,7 @@ def nextUValue(prevU, goalDist, constants=(0,0,0,0)):
     distance = findDistance(prevx, prevy, nextX, nextY) # Find distance between the two points
     startTime = time.time() # Create timeout limit
     while distance < goalDist and (time.time()-startTime) < 1:
-        nextU += 0.000025 # Increment u, any value lower than 0.000025 fails to have appreciable effect on distance 
+        nextU += 0.000725 # Increment u, any value lower than 0.000025 fails to have appreciable effect on distance 
                           # without running into more time constraints
         nextX, nextY = splev(nextU, constants) # Evaluate the next u value with respect to the function
         distance = findDistance(prevx, prevy, nextX, nextY) # Reevaluate distance between the two points
@@ -102,7 +102,7 @@ class PathGenerator():
                     pointsNoHeadNoVel.append(nextPoint)
                     # Find the next x value
                     prevU = nextU
-                    nextU = nextUValue(prevU, 0.01, constants)
+                    nextU = nextUValue(prevU, 0.03, constants)
                 pointsNoHeadNoVel.append(point)
             print("Stage One Time:", time.time() - startTime)
             startTime = time.time()    
@@ -229,7 +229,7 @@ class PathGenerator():
                 pointsOutput.append(point)
                 prevHeading = headingVal  
             print("Stage Four Time:", time.time() - startTime)    
-            #print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
+            print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
             return pointsOutput
         except Exception as e:
             print(e) 
@@ -238,4 +238,3 @@ class PathGenerator():
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             print(exc_type, fname, exc_tb.tb_lineno)
             return pointsOutput
-        

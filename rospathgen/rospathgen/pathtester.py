@@ -15,7 +15,7 @@ debug = 1 # 1 is nothing but essentials, 2 is somewhat verbose, 3 is everything
 printPoints = True
 printVelocities = True
 printHeadings = True
-graph = True
+graph = False
 
 pathName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
 path = []
