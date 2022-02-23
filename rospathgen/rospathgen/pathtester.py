@@ -15,7 +15,7 @@ debug = 1 # 1 is nothing but essentials, 2 is somewhat verbose, 3 is everything
 printPoints = True
 printVelocities = True
 printHeadings = True
-graph = False
+graph = True
 
 pathName = "Haha this name is arbitrary meaning I can make it as long as I want muahahahahaha"
 path = []
@@ -27,7 +27,7 @@ testingPath = [
                         point_name="Start"),
                 Waypoint(point=Vector3(x=3.0, y=7.0, z=0.0), 
                         heading=0.0, 
-                        velocity=3.5, 
+                        velocity=3.5,
                         point_name=""),
                 Waypoint(point=Vector3(x=5.0, y=3.0, z=0.0), 
                         heading=90.0, 
@@ -92,6 +92,72 @@ sixCentimeters = [
                  velocity=0.0, 
                  point_name="6 cm")]
 
+
+autoOneBallPickUp = [ 
+                Waypoint(point=Vector3(x=7.90, y=-3.45, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=7.90, y=-3.81, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                ]
+autoOneShootOne = [
+                Waypoint(point=Vector3(x=7.90, y=-3.81, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                Waypoint(point=Vector3(x=5.69, y=-3.81, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                ]
+autoOneShootTwo = [
+                Waypoint(point=Vector3(x=5.69, y=-3.81, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                Waypoint(point=Vector3(x=4.496, y=-2.794, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting Two Location"),
+                ]
+                
+
+
+autoTwoBallPickUp = [
+                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                ]
+autoTwoShootOne = [
+                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                ]
+autoTwoShootTwo = [
+                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                Waypoint(point=Vector3(x=4.09, y=-1.069, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting Two Location"),
+                ]
+
+
 threePointCurvy = [ 
                 Waypoint(point=Vector3(x=0.0, y=0.0, z=0.0), 
                  heading=0.0, 
@@ -106,6 +172,9 @@ threePointCurvy = [
                  velocity=0.0, 
                  point_name="1 meter")]
 
+
+                 
+
 # Generic Template for a Waypoint
 Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0), 
                  heading=0.0, 
@@ -117,7 +186,7 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = philsTestPath
+path = autoOneBallPickUp 
 pathName = "six"
 max_velocity = 5.5 # m/s
 max_accel = 5.0 # m/s/s
@@ -128,6 +197,9 @@ if path == testingPath: pathName = "Testing Path"
 elif path == tenFeetPath: pathName = "six"
 elif path == philsTestPath: pathName = "Phil's Test Path"
 elif path == sixCentimeters: pathName = "six"
+elif path == autoOneBallPickUp: pathName = "Auto Path One Ball Pick Up"
+elif path == autoOneShootOne: pathName = "Auto Path One First Shoot"
+elif path == autoOneShootTwo: pathName = "Auto Path One Second Shoot"
 else: pathName = "Arbitrary Path"
 
 
@@ -207,9 +279,9 @@ def graphOutput(response):
         plt.plot(xvals,yvals, 'bo')
         plt.xlabel('X value (m)')
         plt.ylabel('Y value (m)')
-        for point in names.keys():
-            x,y = point
-            plt.text(x+0.6, y-0.3, names[point])
+        # for point in names.keys():
+        #     x,y = point
+        #     plt.text(x+0.6, y-0.3, names[point])
         for point in path:
             plt.plot(point.point.x, point.point.y, marker="o", markersize= 7, markeredgecolor="red", markerfacecolor="red")
     if printVelocities:
