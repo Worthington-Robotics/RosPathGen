@@ -114,11 +114,20 @@ autoOneShootOne = [
                  velocity=2.0, 
                  point_name="Shooting One Location"),
                 ]
-autoOneShootTwo = [
+autoOnePlayerStation = [
                 Waypoint(point=Vector3(x=5.69, y=-3.81, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
+                Waypoint(point=Vector3(x=0, y=-3.96, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Player Station"),]
+autoOneShootTwo = [
+                Waypoint(point=Vector3(x=0, y=-3.96, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Player Station"),
                 Waypoint(point=Vector3(x=4.50, y=-2.79, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
@@ -147,11 +156,21 @@ autoThreeShootOne = [
                  velocity=2.0, 
                  point_name="Shooting One Location"),
                 ]
-autoThreeShootTwo = [
-                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+autoThreePlayerStation = [
+                 Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
+                Waypoint(point=Vector3(x=0, y=-3.96, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Player Station"),
+                ]
+autoThreeShootTwo = [
+                Waypoint(point=Vector3(x=0, y=-3.96, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Player Station"),
                 Waypoint(point=Vector3(x=4.09, y=-1.07, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
@@ -225,7 +244,7 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path =  autoTwoShootOne
+path =  autoOneBallPickUp
 max_velocity = 5.5 # m/s
 max_accel = 5.0 # m/s/s
 max_angular_vel = 90.0 # deg / s +
@@ -240,9 +259,13 @@ elif path == sixCentimeters: pathName = "six"
 elif path == autoOneBallPickUp: pathName = "Auto 1: Ball Pick Up"
 elif path == autoOneShootOne: pathName = "Auto 1: First Shot"
 elif path == autoOneShootTwo: pathName = "Auto 1: Second Shot"
+elif path == autoThreeBallPickUp : pathName = "Auto 3: Ball Pick Up"
+elif path == autoThreeShootOne : pathName = "Auto 3: First Shot"
+elif path == autoThreeShootTwo : pathName = "Auto 3: Second Shot"
+elif path == autoFourBallPath : pathName = "Auto 4: Path"
 elif path == autoTwoBallPickUp: pathName = "Auto 2: Ball Pick Up"
 elif path == autoTwoShootOne : pathName = "Auto 2: First Shot"
-elif path == autoTwoShootTwo: pathName = "Auto 2: Second Shot"
+#elif path == autoTwoShootTwo: pathName = "Auto 2: Second Shot"
 
 else: pathName = str(random.random())
 
