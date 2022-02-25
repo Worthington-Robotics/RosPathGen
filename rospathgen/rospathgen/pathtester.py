@@ -95,7 +95,7 @@ sixCentimeters = [
 
 
 autoOneBallPickUp = [ 
-                Waypoint(point=Vector3(x=7.90, y=-3.45, z=0.0), 
+                Waypoint(point=Vector3(x=7.44, y=-2.34, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Start"),
@@ -119,7 +119,7 @@ autoOneShootTwo = [
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
-                Waypoint(point=Vector3(x=4.496, y=-2.794, z=0.0), 
+                Waypoint(point=Vector3(x=4.50, y=-2.79, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting Two Location"),
@@ -127,36 +127,74 @@ autoOneShootTwo = [
                 
 
 
-autoTwoBallPickUp = [
-                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+autoThreeBallPickUp = [
+                Waypoint(point=Vector3(x=6.68, y=-1.63, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Start"),
-                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
+                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                ]
+autoThreeShootOne = [
+                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Pick Up Ball Location"),
+                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                ]
+autoThreeShootTwo = [
+                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting One Location"),
+                Waypoint(point=Vector3(x=4.09, y=-1.07, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Shooting Two Location"),
+                ]
+
+
+
+autoFourBallPath = [
+                Waypoint(point=Vector3(x=6.10, y=0.10, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=4.45, y=-1.07, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Hitting Location"),
+                ]
+
+
+
+autoTwoBallPickUp = [
+                Waypoint(point=Vector3(x=6.53, y=1.22, z=0.0), 
+                 heading=0.0, 
+                 velocity=2.0, 
+                 point_name="Start"),
+                Waypoint(point=Vector3(x=4.88, y=2.01, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Pick Up Ball Location"),
                 ]
 autoTwoShootOne = [
-                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+                Waypoint(point=Vector3(x=4.88, y=2.01, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Pick Up Ball Location"),
-                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
+                Waypoint(point=Vector3(x=3.66, y=-1.35, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
                 ]
-autoTwoShootTwo = [
-                Waypoint(point=Vector3(x=5.17, y=-2.438, z=0.0), 
-                 heading=0.0, 
-                 velocity=2.0, 
-                 point_name="Shooting One Location"),
-                Waypoint(point=Vector3(x=4.09, y=-1.069, z=0.0), 
-                 heading=0.0, 
-                 velocity=2.0, 
-                 point_name="Shooting Two Location"),
-                ]
+
+
 
 
 threePointCurvy = [ 
