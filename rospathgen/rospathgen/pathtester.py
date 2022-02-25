@@ -5,6 +5,7 @@ from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 import numpy as np
 import matplotlib.pyplot as plt
+import random
 
 # Find Distance between 2 x and y values
 def findDistance(startx, starty, endx, endy):
@@ -186,21 +187,26 @@ Waypoint(point=Vector3(x=9.0, y=5.0, z=0.0),
 
 
 # CHANGE THIS TO CHANGE YOUR PATH
-path = autoOneBallPickUp 
-pathName = "six"
+path =  autoTwoShootOne
 max_velocity = 5.5 # m/s
 max_accel = 5.0 # m/s/s
-max_angular_vel = 90.0 # deg / s 
+max_angular_vel = 90.0 # deg / s +
+
+index = 0
 
 # Set Names Specifically when baking
 if path == testingPath: pathName = "Testing Path"
 elif path == tenFeetPath: pathName = "six"
 elif path == philsTestPath: pathName = "Phil's Test Path"
 elif path == sixCentimeters: pathName = "six"
-elif path == autoOneBallPickUp: pathName = "Auto Path One Ball Pick Up"
-elif path == autoOneShootOne: pathName = "Auto Path One First Shoot"
-elif path == autoOneShootTwo: pathName = "Auto Path One Second Shoot"
-else: pathName = "Arbitrary Path"
+elif path == autoOneBallPickUp: pathName = "Auto 1: Ball Pick Up"
+elif path == autoOneShootOne: pathName = "Auto 1: First Shot"
+elif path == autoOneShootTwo: pathName = "Auto 1: Second Shot"
+elif path == autoTwoBallPickUp: pathName = "Auto 2: Ball Pick Up"
+elif path == autoTwoShootOne : pathName = "Auto 2: First Shot"
+elif path == autoTwoShootTwo: pathName = "Auto 2: Second Shot"
+
+else: pathName = str(random.random())
 
 
 
@@ -257,7 +263,7 @@ def graphOutput(response):
             name = point.point_name
             name = str(name)
             names[(point.point.x, point.point.y)] = name       
-        if debug >= 2: print("X: {}, Y: {}, Velocity: {}".format(point.point.x, point.point.y, point.velocity))
+        if debug >= 2: print(f"X: {point.point.x}, Y: {point.point.y}, Velocity: {point.velocity}")
         if point in path: 
             originalTimes.append(currentTime)
     
@@ -271,7 +277,7 @@ def graphOutput(response):
         distance = findDistance(prevxvalue, prevyvalue, xvalue, yvalue)
         if distance > 0.01 or distance < 0.01:
             wrongDistances.append(distance)
-            if debug >= 2: print("Distance between points {}, {} and {}, {} is {}, which is not correct".format(prevxvalue, prevyvalue, xvalue, yvalue, distance))
+            if debug >= 2: print(f"Distance between points {prevxvalue}, {prevyvalue} and {xvalue}, {yvalue} is {distance}, which is not correct")
     
     plt.figure()
     if printPoints:
@@ -328,8 +334,8 @@ def main():
                 pathTester.get_logger().info(
                     'Service call failed %r' % (e,))
             else:
-                if response.success: print("Path successfully completed")
-                else: print("Path unsuccessfully completed with message {}".format(response.message))
+                if response.success: print(f"Path successfully completed with name: {pathName}")
+                else: print(f"Path unsuccessfully completed with message {response.message}")
             break
     pathTester.sendGetRequest()
     while rclpy.ok():
