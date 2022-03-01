@@ -1,0 +1,138 @@
+/pathbuilder:
+  ros__parameters:
+    path_names: 
+    - "testingPath"
+    - "tenFeetPath"
+    - "testCurvy"
+    testingPath:
+      path: 
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=5.0, point_name='Start'"
+      - "point=Vector3(x=3.0, y=7.0, z=0.0), heading=0.0, velocity=3.5, point_name=''"
+      - "point=Vector3(x=5.0, y=3.0, z=0.0), heading=90.0, velocity=5.0, point_name=''"
+      - "point=Vector3(x=4.0, y=4.5, z=0.0), heading=300.0, velocity=0.0, point_name='End'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    tenFeetPath:
+      path: 
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.0, point_name='Start'"
+      - "point=Vector3(x=4.0, y=1.0, z=0.0), heading=0.0, velocity=2.0, point_name='bend'"
+      - "point=Vector3(x=3.0, y=-2.0, z=0.0), heading=0.0, velocity=2.0, point_name='bendy'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    testCurvy:
+      path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.0, point_name='Start'"
+      - "point=Vector3(x=3.048, y=0.6096, z=0.0), heading=0.0, velocity=0.0, point_name='10 ft, 2 ft'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    philsTestPath:
+      path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=5.0, y=1.0, z=0.0), heading=0.0, velocity=2.0, point_name='2'"
+      - "point=Vector3(x=3.0, y=-2.0, z=0.0), heading=0.0, velocity=2.0, point_name='3'"
+      - "point=Vector3(x=1.0, y=-3.0, z=0.0), heading=0.0, velocity=0.0, point_name='End'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    sixCentimeters:
+      path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=0.5, point_name='Start'"
+      - "oint=Vector3(x=0.06, y=0.0, z=0.0), heading=0.0, velocity=0.0, point_name='6 cm'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoOneBallPickUp:
+      path:
+      - "point=Vector3(x=7.44, y=-2.34, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=7.90, y=-3.81, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoOneShootOne:
+      path:
+      - "point=Vector3(x=7.90, y=-3.81, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      - "point=Vector3(x=5.69, y=-3.81, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting One Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoOnePlayerStation:
+      path:
+      - "point=Vector3(x=5.69, y=-3.81, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting One Location'"
+      - "point=Vector3(x=0, y=-3.96, z=0.0), heading=0.0, velocity=2.0, point_name='Player Station'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoOneShootTwo:
+      path:
+      - "point=Vector3(x=0, y=-3.96, z=0.0), heading=0.0, velocity=2.0, point_name='Player Station'"
+      - "point=Vector3(x=4.50, y=-2.79, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting Two Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoThreeBallPickUp:
+      path:
+      - "point=Vector3(x=6.68, y=-1.63, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=5.17, y=-2.44, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoThreeShootOne:
+      path:
+      - "point=Vector3(x=6.00, y=-2.50, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      - "point=Vector3(x=5.17, y=-2.44, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting One Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoThreePlayerStation:
+      path:
+      - "point=Vector3(x=5.17, y=-2.44, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting One Location'"
+      - "point=Vector3(x=0, y=-3.96, z=0.0), heading=0.0, velocity=2.0, point_name='Player Station'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoThreeShootTwo:
+      path:
+      - "point=Vector3(x=0, y=-3.96, z=0.0), heading=0.0, velocity=2.0, point_name='Player Station'"
+      - "point=Vector3(x=4.09, y=-1.07, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting Two Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoFourBallPath:
+      path:
+      - "point=Vector3(x=6.10, y=0.10, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=4.45, y=-1.07, z=0.0), heading=0.0, velocity=2.0, point_name='Hitting Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoTwoBallPickUp:
+      path:
+      - "point=Vector3(x=6.53, y=1.22, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=4.88, y=2.01, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoTwoShootOne:
+      path:
+      - "point=Vector3(x=6.53, y=1.22, z=0.0), heading=0.0, velocity=2.0, point_name='Start'"
+      - "point=Vector3(x=4.88, y=2.01, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    autoTwoShootOne:
+      path:
+      - "point=Vector3(x=4.88, y=2.01, z=0.0), heading=0.0, velocity=2.0, point_name='Pick Up Ball Location'"
+      - "point=Vector3(x=3.66, y=-1.35, z=0.0), heading=0.0, velocity=2.0, point_name='Shooting One Location'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    threePointCurvy:
+      path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=5.0, point_name='Start'"
+      - "point=Vector3(x=0.5, y=0.5, z=0.0), heading=0.0, velocity=3.5, point_name='halfway'"
+      - "point=Vector3(x=0.0, y=1.0, z=0.0), heading=0.0, velocity=0.0, point_name='1 meter'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0

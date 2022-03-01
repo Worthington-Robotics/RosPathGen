@@ -2,7 +2,6 @@ import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath
 from rospathgen.pathgenerator import PathGenerator
-import os, sys
 
 generator = PathGenerator()
 
@@ -14,10 +13,11 @@ class pathServices(Node):
         path = generator.generatePath(request)
         if len(path) == len(request.points) or len(request.points) == 0:
             response.success = False
-            response.message = "Your path could not successfully be generated please contact Tyler and check the output previous to this message."
+            response.message = f"Your path with name: {name} could not successfully be generated please contact Tyler and check the output previous to this message."
             return response
         self.nameToPath[name] = path
         response.success = True
+        response.message = name
         print("Successfully obtained path")
         return response
         
