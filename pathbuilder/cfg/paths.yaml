@@ -1,9 +1,19 @@
 /pathbuilder:
   ros__parameters:
     path_names: 
-    - "testingPath"
-    - "tenFeetPath"
-    - "testCurvy"
+    # - "testingPath"
+    # - "tenFeetPath"
+    # - "testCurvy"
+    - "forwardToBallOne"
+    forwardToBallOne:
+        path:
+        - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=2, point_name='Start'"
+        - "point=Vector3(x=0.6, y=0.5, z=0.0), heading=-60.0, velocity=2, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=0.7, y=2.5, z=0.0), heading=-90.0, velocity=2, point_name='Second Step'"
+        - "point=Vector3(x=-0.4, y=3.5, z=0.0), heading=-120.0, velocity=2, point_name='thrid Step'"
+        max_vel: 5.5
+        max_accel: 5.0
+        max_ang_vel: 90.0
     testingPath:
       path: 
       - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=5.0, point_name='Start'"
@@ -136,3 +146,4 @@
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
+      

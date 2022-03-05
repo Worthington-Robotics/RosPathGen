@@ -21,7 +21,8 @@ setup(
     entry_points={
         'console_scripts': [
             'pathservices = rospathgen.pathservices:main',
-            'pathtester = rospathgen.pathtester:main'
+            'pathtester = rospathgen.pathtester:main',
+            'pathgetter = rospathgen.pathgetter:main'
         ],
     },
 )

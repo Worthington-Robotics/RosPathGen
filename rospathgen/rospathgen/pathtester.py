@@ -147,17 +147,17 @@ autoThreeBallPickUp = [
                  point_name="Pick Up Ball Location"),
                 ]
 autoThreeShootOne = [
-                Waypoint(point=Vector3(x=6.00, y=-2.50, z=0.0), 
+                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Pick Up Ball Location"),
-                Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+                Waypoint(point=Vector3(x=3.40, y=-1.68, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
                 ]
 autoThreePlayerStation = [
-                 Waypoint(point=Vector3(x=5.17, y=-2.44, z=0.0), 
+                 Waypoint(point=Vector3(x=3.40, y=-1.68, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
                  point_name="Shooting One Location"),
@@ -187,7 +187,7 @@ autoFourBallPath = [
                 Waypoint(point=Vector3(x=4.45, y=-1.07, z=0.0), 
                  heading=0.0, 
                  velocity=2.0, 
-                 point_name="Hitting Location"),
+                 point_name="Hitting Location")
                 ]
 
 

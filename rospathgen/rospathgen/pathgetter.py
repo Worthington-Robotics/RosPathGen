@@ -7,7 +7,7 @@ import rclpy, pylab, math
 import numpy as np
 import matplotlib.pyplot as plt
 
-PATH_NAME = "name"
+PATH_NAME = "forwardToBallOne"
 DEBUG = 1
 
 printPoints = True
@@ -17,7 +17,8 @@ graph = True
 
 class getter(Node):
     def __init__(self):
-        self.getclient = self.create_client(GetPath, '/get_path')
+        super().__init__('path_getter')
+        self.getclient = self.create_client(srv_type=GetPath, srv_name='/get_path')
         self.getrequest = GetPath.Request()
 
     def sendGetRequest(self):
