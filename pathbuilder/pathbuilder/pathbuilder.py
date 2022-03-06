@@ -29,7 +29,7 @@ class pathBuilder(Node):
         fixedPoints = []
         for strpoint in points:
             strpoint.replace(" ", "")
-            print(strpoint)
+            self.get_logger().debug(strpoint)
             x = float(strpoint[(strpoint.find("x")+2): strpoint.find(",", (strpoint.find("x=")+1)-1)])
             y = float(strpoint[(strpoint.find("y")+2): strpoint.find(",", (strpoint.find("y=")+1)-1)])
             z = float(strpoint[(strpoint.find("z")+2): strpoint.find(")", (strpoint.find("z=")+1)-1)])
@@ -38,9 +38,9 @@ class pathBuilder(Node):
             vel = float(strpoint[(strpoint.find("velocity")+9): strpoint.find(",", (strpoint.find("velocity")+1))])
             pointname = strpoint[(strpoint.find("point_name")+12): strpoint.find("'", (strpoint.find("point_name")+1))]
             waypoint = Waypoint(point=vector, heading=head, velocity=vel, point_name=pointname)
-            #if DEBUG: print(waypoint)
+            self.get_logger().debug(waypoint)
             fixedPoints.append(waypoint)
-        if DEBUG: print(fixedPoints)
+        self.get_logger().debug(fixedPoints)
         request.points = fixedPoints
         return self.pathBaker.call_async(request)
     
@@ -60,9 +60,9 @@ def main():
                     'Service call failed %r' % (e,))
             else:
                 if response.success:
-                    print(f"Paths Sucessfully BuiltS")
+                    node.get_logger().info(f"Paths Sucessfully Built")
                 else:
-                    print(response.message)
+                    node.get_logger().error(response.message)
             break
     node.destroy_node()
     rclpy.shutdown()

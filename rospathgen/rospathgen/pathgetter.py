@@ -122,7 +122,7 @@ def main():
             try:
                 response = pathTester.secondFuture.result()
             except Exception as e:
-                pathTester.get_logger().info(
+                pathTester.get_logger().error(
                     'Service call failed %r' % (e,))
             else:
                 graphOutput(response)

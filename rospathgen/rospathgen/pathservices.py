@@ -8,7 +8,7 @@ generator = PathGenerator()
 class pathServices(Node):
     nameToPath = {}
     def bakePathCallback(self, request, response):
-        print("I've got the path, am working on it, please don't stop me now.")
+        self.get_logger().info("I've got the path, am working on it, please don't stop me now.")
         name = request.path_name
         path = generator.generatePath(request)
         if len(path) == len(request.points) or len(request.points) == 0:
@@ -18,7 +18,7 @@ class pathServices(Node):
         self.nameToPath[name] = path
         response.success = True
         response.message = name
-        print("Successfully obtained path")
+        self.get_logger().info("Successfully obtained path")
         return response
         
     def getPathCallback(self, request, response):
@@ -26,11 +26,10 @@ class pathServices(Node):
         try: 
             path = self.nameToPath[name]
             response.path = path
-            print("Sucessfully found path with name {}".format(name))
+            self.get_logger().info("Sucessfully found path with name {}".format(name))
         except Exception as e:
-            print(e)
-            print("Did not find path with name {}".format(name))
-            print("Did you remember to create said path?")
+            self.get_logger().fatal("Did not find path with name {}".format(name))
+            self.get_logger().error("Did you remember to create said path?")
             response = []
         return response
 
