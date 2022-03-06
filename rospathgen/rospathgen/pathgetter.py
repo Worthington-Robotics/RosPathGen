@@ -82,6 +82,9 @@ def graphOutput(response):
         plt.plot(xvals,yvals, 'bo')
         plt.xlabel('X value (m)')
         plt.ylabel('Y value (m)')
+        plt.gca().set_aspect('equal', adjustable='datalim')
+        plt.gca().autoscale()
+        plt.gca().grid()
         # for point in names.keys():
         #     x,y = point
         #     plt.text(x+0.6, y-0.3, names[point])
@@ -90,12 +93,14 @@ def graphOutput(response):
         plt.plot(time,velocities, 'bo')
         plt.xlabel('Time')
         plt.ylabel('Velocity (m/s)')
+        plt.gca().grid()
     if printHeadings:
         plt.subplot(222)
         plt.ylim([0, 360])
         plt.plot(time,headings, 'bo')
         plt.xlabel('Time')
         plt.ylabel('Heading (deg)')
+        plt.gca().grid()
         # for point in path:
         #     if DEBUG >= 0: print(originalTimes)
         #     specificTime = originalTimes[path.index(point)]

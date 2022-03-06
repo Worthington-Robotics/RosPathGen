@@ -74,7 +74,7 @@ class PathGenerator():
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
                 if debug: print(xvalues, yvalues) 
-                constants, uGiven = splprep([xvalues, yvalues])
+                constants, uGiven = splprep([xvalues, yvalues], s=0.000000001)
                 if len(xvalues) < 4: uGiven = np.delete(uGiven, 1)
             
             # Stage 1: Get all the points, no headings, no velocities
