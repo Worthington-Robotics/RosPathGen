@@ -1,5 +1,6 @@
 from setuptools import setup
 from glob import glob
+import os
 
 package_name = 'rospathgen'
 
@@ -25,7 +26,7 @@ setup(
         'console_scripts': [
             'pathservices = rospathgen.pathservices:main',
             'pathtester = rospathgen.pathtester:main',
-            'pathgetter = rospathgen.pathgetter:main'
+            'pathgetter = rospathgen.pathgetter:main',
             'pathbuilder = rospathgen.pathbuilder:main'
         ],
     },

@@ -17,6 +17,9 @@ class pathBuilder(Node):
 
         for name in pathNames:
             path = self.declare_parameter(name + ".path", [""]).value
+            while not self.pathBaker.wait_for_service(timeout_sec=1.0):
+                self.get_logger().info('service not available, waiting again...')
+            
             self.future = self.send_request(name, path)
             
             

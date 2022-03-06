@@ -3,7 +3,7 @@
 # file.
 from rclpy.node import Node
 from rospathmsgs.srv import GetPath
-import rclpy, pylab, math
+import rclpy, pylab, math, sys
 import numpy as np
 import matplotlib.pyplot as plt
 
@@ -22,7 +22,10 @@ class getter(Node):
         self.getrequest = GetPath.Request()
 
     def sendGetRequest(self):
-        self.getrequest.path_name = PATH_NAME
+        name = ""
+        if sys.argv[1] is str: name = sys.argv[1]
+        else: name = str(sys.argv[1])
+        self.getrequest.path_name = name
         self.secondFuture = self.getclient.call_async(self.getrequest)
 
 # Find Distance between 2 x and y values

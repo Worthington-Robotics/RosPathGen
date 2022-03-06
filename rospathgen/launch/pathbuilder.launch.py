@@ -16,7 +16,7 @@ def generate_launch_description():
             respawn = True
         ),
         launch_ros.actions.Node(
-            package = "pathbuilder",
+            package = "rospathgen",
             executable = "pathbuilder",
             name = "pathbuilder",
             output = "screen",
