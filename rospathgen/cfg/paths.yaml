@@ -4,24 +4,23 @@
     # - "testingPath"
     # - "tenFeetPath"
     # - "testCurvy"
-    - "forwardToBallOne"
-    forwardToBallOne:
+    - "pathOneToBallOne"
+    - "pathOneToBallTwo"
+    pathOneToBallOne:
         path:
-        - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=.5, point_name='Start'"
-        - "point=Vector3(x=0.8, y=0.15, z=0.0), heading=0.0, velocity=2, point_name='Forward 0.8 m'"
-        - "point=Vector3(x=0.5, y=.5, z=0.0), heading=-90.0, velocity=4, point_name='Forward 0.8 m'"
-        - "point=Vector3(x=0.45, y=2.25, z=0.0), heading=-135.0, velocity=4, point_name='Second Step'"
-        - "point=Vector3(x=0.2, y=3.75, z=0.0), heading=-135.0, velocity=1, point_name='Second Step'"
-        - "point=Vector3(x=0, y=2, z=0.0), heading=-135.0, velocity=.25, point_name='thrid Step'"
+        - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Start'"
+        - "point=Vector3(x=0.82, y=0.15, z=0.0), heading=0.0, velocity=4, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=0.53, y=.5, z=0.0), heading=-90.0, velocity=5, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=0.42, y=2.25, z=0.0), heading=-135.0, velocity=5, point_name='Second Step'"
+        - "point=Vector3(x=0.2, y=3.75, z=0.0), heading=-135.0, velocity=3, point_name='Second Step'" # .2x
+        #- "point=Vector3(x=0, y=2, z=0.0), heading=-135.0, velocity=.25, point_name='thrid Step'"
         max_vel: 5.5
         max_accel: 5.0
         max_ang_vel: 90.0
-    testingPath:
+    pathOneToBallTwo:
       path: 
-      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=5.0, point_name='Start'"
-      - "point=Vector3(x=3.0, y=7.0, z=0.0), heading=0.0, velocity=3.5, point_name=''"
-      - "point=Vector3(x=5.0, y=3.0, z=0.0), heading=90.0, velocity=5.0, point_name=''"
-      - "point=Vector3(x=4.0, y=4.5, z=0.0), heading=300.0, velocity=0.0, point_name='End'"
+      - "point=Vector3(x=0.2, y=3.75, z=0.0), heading=-135.0, velocity=2, point_name='Second Step'" #.2 x
+      - "point=Vector3(x=-.1, y=2, z=0.0), heading=-135.0, velocity=4, point_name='thrid Step'"
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
