@@ -1,3 +1,4 @@
+from this import s
 import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath, ListPaths
@@ -23,11 +24,11 @@ class pathServices(Node):
         
     def getPathCallback(self, request, response):
         name = request.path_name
-        try: 
+        if name in self.nameToPath.keys():
             path = self.nameToPath[name]
             response.path = path
             self.get_logger().info("Sucessfully found path with name {}".format(name))
-        except Exception as e:
+        else:
             self.get_logger().fatal("Did not find path with name {}".format(name))
             self.get_logger().error("Did you remember to create said path?")
             response = []
