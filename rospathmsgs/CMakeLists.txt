@@ -31,6 +31,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Point.msg"
   "srv/BakePath.srv"
   "srv/GetPath.srv"
+  "srv/ListPaths.srv"
   
   DEPENDENCIES geometry_msgs std_msgs
 )

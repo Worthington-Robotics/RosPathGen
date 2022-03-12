@@ -1,6 +1,6 @@
 import rclpy
 from rclpy.node import Node
-from rospathmsgs.srv import BakePath, GetPath
+from rospathmsgs.srv import BakePath, GetPath, ListPaths
 from rospathgen.pathgenerator import PathGenerator
 
 generator = PathGenerator()
@@ -33,10 +33,16 @@ class pathServices(Node):
             response = []
         return response
 
+    def listPathsCallback(self, request, response):
+        paths = self.nameToPath.keys()
+        response.names = paths
+        return response
+
     def __init__(self):
         super().__init__('pathGen')
         self.bakepathsrv = self.create_service(BakePath, 'bake_path', self.bakePathCallback)
         self.getpathsrv = self.create_service(GetPath, 'get_path', self.getPathCallback)
+        self.listpathssrv = self.create_service(ListPaths,'list_paths', self.listPathsCallback)
         
 # Run a node, don't try to understand
 def main(args=None):
