@@ -4,8 +4,8 @@
     # - "testingPath"
     # - "tenFeetPath"
     # - "testCurvy"
-    #- "pathOneToBallOne"
-    #- "pathOneToBallTwo"
+    - "pathOneToBallOne"
+    - "pathOneToBallTwo"
     - "moveForward"
     - "moveRight"
 
@@ -153,13 +153,13 @@
     moveForward:
       path:
       - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity= 1.0, point_name='original'"
-      - "point=Vector3(x=0.0, y= 0.5, z=0.0), heading=0.0, velocity= 1.0, point_name='target'"
+      - "point=Vector3(x=0.5, y= 0.0, z=0.0), heading=0.0, velocity= 1.0, point_name='target'"
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
     moveRight:
       path:
-      - "point=Vector3(x=0.0, y=0.5, z=0.0), heading=0.0, velocity= 1.0, point_name='target'"
+      - "point=Vector3(x=0.5, y=0.0, z=0.0), heading=0.0, velocity= 1.0, point_name='target'"
       - "point=Vector3(x=0.5, y= 0.5, z=0.0), heading=0.0, velocity= 1.0, point_name='original'"
       max_vel: 5.5
       max_accel: 5.0
