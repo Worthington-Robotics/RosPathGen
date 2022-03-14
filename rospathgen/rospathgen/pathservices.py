@@ -1,4 +1,3 @@
-from this import s
 import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath, ListPaths

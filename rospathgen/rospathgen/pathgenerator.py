@@ -1,4 +1,3 @@
-from multiprocessing.dummy import current_process
 from rospathmsgs.msg import Waypoint
 from geometry_msgs.msg import Vector3
 from scipy.interpolate import splprep, splev
