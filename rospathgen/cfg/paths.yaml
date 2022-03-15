@@ -236,10 +236,11 @@
     rotateRobot:
       path:
       # - "point=Vector3(x=1.35, y=0.6, z=0.0), heading=30.0, velocity=3, point_name='Get ball'"
-      - "point=Vector3(x=1.35, y=0.6, z=0.0), heading=0.0, velocity=3, point_name='Hit opposing ball'"
-      - "point=Vector3(x=1.30, y=0.7, z=0.0), heading=200.0, velocity=1.5, point_name='Get ball'"
+      - "point=Vector3(x=1.75, y=0.6, z=0.0), heading=0.0, velocity=3, point_name='Hit opposing ball'"
+      - "point=Vector3(x=1.90, y=0.7, z=0.0), heading=200.0, velocity=1.5, point_name='Get ball'"
       max_vel: 5.5
       max_accel: 5.0
+      
       max_ang_vel: 90.0
 
     
