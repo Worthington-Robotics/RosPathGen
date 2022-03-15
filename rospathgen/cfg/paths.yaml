@@ -46,7 +46,7 @@
         path:
         - "point=Vector3(x=-0.82, y=0.0, z=0.0), heading=180.0, velocity=1.5, point_name='Forward 0.8 m'"
         - "point=Vector3(x=-0.62, y=0.0, z=0.0), heading=0.0, velocity=3, point_name='Forward 0.8 m'"
-        #- "point=Vector3(x=0, y=2, z=0.0), heading=-135.0, velocity=.25, point_name='thrid Step'"
+        - "point=Vector3(x=0, y=2, z=0.0), heading=-135.0, velocity=.25, point_name='thrid Step'"
         max_vel: 5.5
         max_accel: 5.0
         max_ang_vel: 90.0

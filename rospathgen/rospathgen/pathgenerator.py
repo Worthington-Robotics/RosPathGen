@@ -5,7 +5,7 @@ import numpy as np
 import sys, os, math, time
 
 
-debug = False
+debug = True
 
 # Find Distance between 2 x and y values
 def findDistance(startx, starty, endx, endy):
@@ -72,6 +72,13 @@ class PathGenerator():
                     yvalue = yvalues[0] + yvalues[1] / 2
                     xvalues.insert(1, xvalue)
                     yvalues.insert(1, yvalue)
+                    headingVal = pointsInput[0].heading
+                    velocityVal = pointsInput[0].velocity
+                    newPoint = Waypoint(point = Vector3(x = xvalue, y = yvalue, z = 0.0), 
+                                        heading = headingVal,  
+                                        velocity = velocityVal,
+                                        point_name = "")
+                    pointsInput.insert(1, newPoint)
                 if debug: print(xvalues, yvalues) 
                 constants, uGiven = splprep([xvalues, yvalues], s=0.000000001)
                 if len(xvalues) < 4: uGiven = np.delete(uGiven, 1)
