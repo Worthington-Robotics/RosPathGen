@@ -7,7 +7,6 @@ import rclpy, pylab, math, sys
 import numpy as np
 import matplotlib.pyplot as plt
 
-PATH_NAME = "forwardToBallOne"
 DEBUG = 1
 
 printPoints = True
@@ -116,7 +115,7 @@ def graphOutput(response):
 
     if graph:
         fig = pylab.gcf()
-        fig.canvas.manager.set_window_title(PATH_NAME)
+        fig.canvas.manager.set_window_title(sys.argv[1])
         plt.show()
 
 
