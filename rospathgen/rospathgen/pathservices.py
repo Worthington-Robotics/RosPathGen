@@ -1,4 +1,3 @@
-from this import s
 import rclpy
 from rclpy.node import Node
 from rospathmsgs.srv import BakePath, GetPath, ListPaths
@@ -31,7 +30,7 @@ class pathServices(Node):
         else:
             self.get_logger().fatal("Did not find path with name {}".format(name))
             self.get_logger().error("Did you remember to create said path?")
-            response = []
+            response.path = []
         return response
 
     def listPathsCallback(self, request, response):

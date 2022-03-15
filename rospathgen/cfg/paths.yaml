@@ -13,8 +13,7 @@
         path:
         - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Start'"
         - "point=Vector3(x=0.82, y=0.15, z=0.0), heading=0.0, velocity=4, point_name='Forward 0.8 m'"
-        - "point=Vector3(x=0.6, y=0.35, z=0.0), heading=0.0, velocity=4, point_name='Forward 0.8 m'"
-        - "point=Vector3(x=0.5, y=.75, z=0.0), heading=-90.0, velocity=5, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=0.5, y=.75, z=0.0), heading=-60.0, velocity=5, point_name='Forward 0.8 m'"
         - "point=Vector3(x=0.45, y=2.25, z=0.0), heading=-135.0, velocity=5, point_name='Second Step'"
         - "point=Vector3(x=0.2, y=3.75, z=0.0), heading=-135.0, velocity=3, point_name='Second Step'" # .2x
         #- "point=Vector3(x=0, y=2, z=0.0), heading=-135.0, velocity=.25, point_name='thrid Step'"
