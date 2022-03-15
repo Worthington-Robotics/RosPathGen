@@ -18,7 +18,7 @@
     pathOneToBallOne:
         path:
         - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Start'"
-        - "point=Vector3(x=0.82, y=0.10, z=0.0), heading=0.0, velocity=4, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=0.87, y=0.10, z=0.0), heading=0.0, velocity=4, point_name='Forward 0.8 m'"
         - "point=Vector3(x=0.5, y=.75, z=0.0), heading=-60.0, velocity=4, point_name='Forward 0.8 m'"
         - "point=Vector3(x=0.55, y=1.0, z=0.0), heading=-90.0, velocity=5, point_name='Forward 0.8 m'"
         - "point=Vector3(x=0.5, y=2.0, z=0.0), heading=-90.0, velocity=5, point_name='Forward 0.8 m'"
@@ -31,7 +31,7 @@
     pathOneToBallTwo:
       path: 
       - "point=Vector3(x=0.37, y=3.85, z=0.0), heading=-125.0, velocity=2, point_name='Second Step'" #.2 x
-      - "point=Vector3(x=-.3, y=2, z=0.0), heading=-135.0, velocity=4, point_name='thrid Step'"
+      - "point=Vector3(x=-.25, y=2, z=0.0), heading=-135.0, velocity=4, point_name='thrid Step'"
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
@@ -240,7 +240,7 @@
       - "point=Vector3(x=1.90, y=0.7, z=0.0), heading=200.0, velocity=1.5, point_name='Get ball'"
       max_vel: 5.5
       max_accel: 5.0
-      
+
       max_ang_vel: 90.0
 
     
