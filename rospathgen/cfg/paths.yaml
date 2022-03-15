@@ -186,4 +186,16 @@
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
+    pathTwoTwoBall:
+      path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Start'"
+      - "point=Vector3(x=0.89, y=0.76, z=0.0), heading=30, velocity=1.5, point_name='Hit opposing ball'"
+      - "point=Vector3(x=1.32, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Get ball'"
+      max_vel: 5.5
+      max_accel: 5.0
+      max_ang_vel: 90.0
+    rotateRobot:
+       path:
+      - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=180.0, velocity=1.5, point_name='Start'"
+
     
