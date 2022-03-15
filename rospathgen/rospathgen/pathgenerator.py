@@ -5,7 +5,7 @@ import numpy as np
 import sys, os, math, time
 
 
-debug = True
+debug = False
 
 # Find Distance between 2 x and y values
 def findDistance(startx, starty, endx, endy):
