@@ -31,7 +31,7 @@
     pathOneToBallTwo:
       path: 
       - "point=Vector3(x=0.37, y=3.85, z=0.0), heading=-125.0, velocity=2, point_name='Second Step'" #.2 x
-      - "point=Vector3(x=-.25, y=2.06, z=0.0), heading=-135.0, velocity=4, point_name='thrid Step'"
+      - "point=Vector3(x=-.25, y=2.1, z=0.0), heading=-135.0, velocity=4, point_name='thrid Step'"
       max_vel: 5.5
       max_accel: 5.0
       max_ang_vel: 90.0
