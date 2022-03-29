@@ -14,7 +14,14 @@
     - "moveRight"
     - "pathTwoTwoBall"
     - "rotateRobot"
-
+    - "pathThreeOffLine"
+    pathThreeOffLine:
+        path:
+        - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=2, point_name='Start'"
+        - "point=Vector3(x=-1.4, y=0.0, z=0.0), heading=0.0, velocity=5, point_name='Forward 0.8 m'"
+        max_vel: 5.5
+        max_accel: 5.0
+        max_ang_vel: 90.0
     pathOneToBallOne:
         path:
         - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=1.5, point_name='Start'"
