@@ -14,24 +14,26 @@
     - "moveRight"
     - "pathTwoTwoBall"
     - "rotateRobot"
-    - "pathThreeOffLine"
+    - "pathThreeOffline"
     - "pathTwoOffline"
     - "pathTwoUTurn"
     pathTwoUTurn:
         path:
-        - "point=Vector3(x=1.4, y=0.0, z=0.0), heading=0.0, velocity=5, point_name='Forward 0.8 m'"
-        - "point=Vector3(x=1.6, y=0.0, z=0.0), heading=180.0, velocity=5, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=1.4, y=0.1, z=0.0), heading=300.0, velocity=2, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=1.6, y=-0.3, z=0.0), heading=240.0, velocity=4, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=2.0, y=-0.5, z=0.0), heading=173.0, velocity=4, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=-.1, y=0.1, z=0.0), heading=173.0, velocity=4, point_name='Forward 0.8 m'"
         max_vel: 5.5
         max_accel: 5.0
         max_ang_vel: 360.0
-    pathTwoOffLine:
+    pathTwoOffline:
         path:
         - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=2, point_name='Start'"
-        - "point=Vector3(x=1.4, y=0.0, z=0.0), heading=0.0, velocity=5, point_name='Forward 0.8 m'"
+        - "point=Vector3(x=1.4, y=0.15, z=0.0), heading=300.0, velocity=2, point_name='Forward 0.8 m'"
         max_vel: 5.5
         max_accel: 5.0
         max_ang_vel: 90.0
-    pathThreeOffLine:
+    pathThreeOffline:
         path:
         - "point=Vector3(x=0.0, y=0.0, z=0.0), heading=0.0, velocity=2, point_name='Start'"
         - "point=Vector3(x=-1.4, y=0.0, z=0.0), heading=0.0, velocity=5, point_name='Forward 0.8 m'"
