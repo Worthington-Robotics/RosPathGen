@@ -95,7 +95,7 @@ def graphOutput(response):
         plt.gca().grid()
     if printHeadings:
         plt.subplot(222)
-        plt.ylim([0, 360])
+        plt.ylim([0, 2.1*3.14159265])
         plt.plot(time,headings, 'bo')
         plt.xlabel('Time')
         plt.ylabel('Heading (deg)')
