@@ -84,7 +84,7 @@ class PathGenerator():
             startTime = time.time() # create timeout condition
 
             currentU = 1
-            for u in np.linspace(0,1,50):
+            for u in np.linspace(0,1,200):
                 if u == 0:
                     pointsNoHeadNoVel.append(pointsInput[0])
                     continue
