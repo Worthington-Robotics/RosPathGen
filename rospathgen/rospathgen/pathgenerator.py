@@ -3,6 +3,7 @@ from geometry_msgs.msg import Vector3
 from scipy.interpolate import splprep, splev
 import numpy as np
 import sys, os, math, time
+from rclpy.node import Node
 
 
 debug = False
@@ -28,11 +29,15 @@ def nextUValue(prevU, goalDist, constants=(0,0,0,0)):
 
 class PathGenerator(): 
 
+    def __init__(self, node: Node):
+        self.logger = node.get_logger()
+
     def generatePath(self, request):
         pointsInput = [] # Input list of points
         pointsNoHeadNoVel = [] # Points without heading or velocity
         pointsNoHeadFWVel = [] # Points with no heading, no backwards velocity pass
         pointsNoHead = [] # Points with no heading
+        pointsNoAngVel = [] #Points with heading, fw & backwards vel, no angular velocity
         pointsOutput = [] # Output list of points with heading and velocity
         maxAccel = 8 # Max Acceleration (Default)
         maxVelocity = 10 # Max Velocity (Default)
@@ -46,8 +51,8 @@ class PathGenerator():
         """Give a list of waypoints, gives back entire path"""
         try: 
             pathStartTime = time.time()
-            if debug: print(request)
-            if debug: print(request.points)
+            # if debug: print(request)
+            self.logger.debug("Requested points {}".format(request.points))
             pointsInput = request.points
             for index in range(len(pointsInput)):
                 x = pointsInput[index].point.x
@@ -60,57 +65,50 @@ class PathGenerator():
             maxVelocity = request.max_velocity
             maxAngularVelocity = request.max_angular_vel  
 
-            # Scipy implementation of Curve Fitting
-            if len(pointsInput) < 3:
-                # Linear Paths
-                constants, uGiven = splprep([xvalues, yvalues], k = 1)
-            else:
-                constants = 0,0
-                # Get Length to SciPy Minimum of 4
-                if len(xvalues) < 4:
-                    xvalue = xvalues[0] + xvalues[1] / 2
-                    yvalue = yvalues[0] + yvalues[1] / 2
-                    xvalues.insert(1, xvalue)
-                    yvalues.insert(1, yvalue)
-                    headingVal = pointsInput[0].heading
-                    velocityVal = pointsInput[0].velocity
-                    newPoint = Waypoint(point = Vector3(x = xvalue, y = yvalue, z = 0.0), 
-                                        heading = headingVal,  
-                                        velocity = velocityVal,
-                                        point_name = "")
-                    pointsInput.insert(1, newPoint)
-                if debug: print(xvalues, yvalues) 
-                constants, uGiven = splprep([xvalues, yvalues], s=0.000000001)
-                if len(xvalues) < 4: uGiven = np.delete(uGiven, 1)
+            # perform order selection
+            if debug: print(xvalues, yvalues) 
+            k = 3
+            if len(xvalues) <= k:
+                k = len(xvalues) - 1
+                self.logger.warning("Could not keep 3rd order spline on path with {} points. Switching to order {}".format(len(xvalues), k))
+                
+
+            (constants, uGiven), fpGiven, ier, msg = splprep([xvalues, yvalues], s=0, full_output=1, k=k)
+            if ier > 0:
+                self.logger.error('error during splprep: {}'.format(msg))
+                return
+
+            self.logger.debug("len of uGiven {}".format(len(uGiven)))
             
             # Stage 1: Get all the points, no headings, no velocities
-            for point in pointsInput:
-                if pointsInput.index(point) == 0: 
-                    pointsNoHeadNoVel.append(point)
+            startTime = time.time() # create timeout condition
+
+            currentU = 1
+            for u in np.linspace(0,1,50):
+                if u == 0:
+                    pointsNoHeadNoVel.append(pointsInput[0])
                     continue
-                prevPoint = pointsInput[pointsInput.index(point) - 1]
-                prevIndex = pointsInput.index(point) - 1
-                prevU = uGiven[prevIndex]
-                finalU = uGiven[pointsInput.index(point)]
-                # go through a loop where each point is at 0.01 meters of distance (x and y) !! apart
-                # point is starting point find next x value by integral(a, b, sqrt(1+(f'(x))^2))dx = distance b/w points
-                nextU = nextUValue(prevU, 0.01, constants)
-                startTime = time.time() # create timeout condition
-                while nextU < finalU and (time.time() - startTime) < 1:
-                    # Make a point at (nextX, yval)
-                    xval, yval = splev(nextU, constants) 
-                    # y val calculated from curve fitted earlier 
-                    if debug: print("xval: {} yval: {}".format(xval, yval))
-                    nextPoint = Waypoint(point = Vector3(x = float(xval), y = float(yval), z = 0.0), 
-                                        heading = 0.0,  
-                                        velocity = 0.0,
-                                        point_name = "")
-                    pointsNoHeadNoVel.append(nextPoint)
-                    # Find the next x value
-                    prevU = nextU
-                    nextU = nextUValue(prevU, 0.03, constants)
-                pointsNoHeadNoVel.append(point)
-            print("Stage One Time:", time.time() - startTime)
+                elif u == 1:
+                    pointsNoHeadNoVel.append(pointsInput[-1])
+                    continue
+                if (u < uGiven[currentU]):
+                    xval, yval = splev(u, constants)
+                else:
+                    # inject the point betweens
+                    pointsNoHeadNoVel.append(pointsInput[currentU])
+
+                    xval, yval = splev(uGiven[currentU], constants)
+                    currentU = currentU + 1
+
+                nextPoint = Waypoint(point = Vector3(x = float(xval), y = float(yval), z = 0.0), 
+                                heading = 0.0,  
+                                velocity = 0.0,
+                                point_name = "")
+                pointsNoHeadNoVel.append(nextPoint)
+
+            # print("Stage 1 points {}".format(pointsNoHeadNoVel))
+
+            self.logger.debug(f"Stage One Time: {time.time() - startTime}")
             startTime = time.time()    
             
             # Stage 2: Velocity
@@ -125,15 +123,18 @@ class PathGenerator():
             timeElapsed = 0 
             for point in pointsNoHeadNoVel:
                 if pointsNoHeadNoVel.index(point) == 0:
-                    if debug: print(f"Reset Max Velocity to 0 at point ({point.point.x},{point.point.y})")
+                    self.logger.debug(f"Reset Max Velocity to 0 at point ({point.point.x},{point.point.y})")
+                        
                     currentMaxVel = point.velocity
                     point.velocity = 0.0
                     pointsNoHeadFWVel.append(point)
                     continue
+
                 prevPoint = pointsNoHeadNoVel[pointsNoHeadNoVel.index(point) - 1]
+
                 if point.velocity > 0:
                     currentMaxVel = point.velocity
-                    if debug: print(f"Velocity Updated to: {currentMaxVel} at point ({point.point.x},{point.point.y})")
+                    self.logger.debug(f"Velocity Updated to: {currentMaxVel} at point ({point.point.x},{point.point.y})")
                 distance = abs(findDistance(point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
@@ -144,11 +145,11 @@ class PathGenerator():
                 timeDelta = (2 / (point.velocity + prevPoint.velocity)) * distance
                 timeElapsed += timeDelta
                 if timeElapsed > timeLimit:
-                    print("Stage Two Time but path isn't acceptable:", time.time() - startTime)
+                    self.logger.warning(f"Stage Two Time but path isn't acceptable:{time.time() - startTime}")
                     startTime = time.time()
                     return request.points
                 pointsNoHeadFWVel.append(point)
-            print("Stage Two Time:", time.time() - startTime)
+            self.logger.debug(f"Stage Two Time: {time.time() - startTime}")
             startTime = time.time()
 
             # Stage 3: Backward Pass
@@ -165,24 +166,25 @@ class PathGenerator():
                     continue
                 if point.velocity > currentMaxVel:
                     currentMaxVel = point.velocity
-                    if debug: print("Velocity Updated to: {} at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+                    self.logger.debug("Velocity Updated to: {} at point ({},{})".format(currentMaxVel, point.point.x, point.point.y))
+
                 prevPoint = reversedPointsNoHeadFWVel[currentIndex-1]
                 distance = abs(findDistance(point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
                 # Enforce global max velocity and max reachable velocity by global acceleration limit.
                 # vf = sqrt(vi^2 + 2*a*d)
                 vel = math.sqrt(prevPoint.velocity ** 2 + 2 * maxAccel * distance)
                 if vel > currentMaxVel: vel = currentMaxVel
-                if debug: print("Vel Value {} at Point {}, {} with previous point {}, {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
+                self.logger.debug("Vel Value {} at Point {}, {} with previous point {}, {} vel value {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y, prevPoint.velocity))
                 point.velocity = vel if point.velocity > vel else point.velocity
                 # If path is not feasible, abort
                 timeDelta = (2/(point.velocity + prevPoint.velocity))* distance
                 timeElapsed += timeDelta
                 if timeElapsed > timeLimit: 
-                    print("Stage Three Time but the path isn't acceptable:", time.time() - startTime)
+                    self.logger.warning(f"Stage Three Time but the path isn't acceptable:{time.time() - startTime}")
                     startTime = time.time()
                     return request.points
                 pointsNoHead.insert(0, point)
-            print("Stage Three Time:", time.time() - startTime)
+            self.logger.debug(f"Stage Three Time: {time.time() - startTime}")
             startTime = time.time()
 
             # DESIGN STANDARD: Any Start Point should have a heading of 0
@@ -230,17 +232,17 @@ class PathGenerator():
                     pointsOutput.append(point)
                     continue
                 headingVal = prevHeading + segmentAngVel # Heading Calculation using angular velocity
-                if headingVal < 0: headingVal = 360+headingVal # make sure negative headings don't happen
+                if headingVal < 0: headingVal = 360 + headingVal # make sure negative headings don't happen
                 point.heading = float(headingVal)
                 pointsOutput.append(point)
                 prevHeading = headingVal  
-            print("Stage Four Time:", time.time() - startTime)    
-            print("That path took {} seconds to complete.".format(time.time()-pathStartTime))
+            self.logger.debug(f"Stage Four Time: {time.time() - startTime}")    
+            self.logger.info(f"Path took {time.time() - pathStartTime} seconds to complete.")
             return pointsOutput
         except Exception as e:
-            print(e) 
-            print("i did a dumb")
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
-            print(exc_type, fname, exc_tb.tb_lineno)
+            self.logger.error(f"Caught exception during generation {type(e)}: {e}, {exc_type, fname, exc_tb.tb_lineno}")
+            self.logger.debug(request.points)
+            self.logger.debug(f"")
             return pointsOutput
