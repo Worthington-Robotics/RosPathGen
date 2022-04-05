@@ -27,6 +27,11 @@ def nextUValue(prevU, goalDist, constants=(0,0,0,0)):
         distance = findDistance(prevx, prevy, nextX, nextY) # Reevaluate distance between the two points
     return nextU
 
+def calcAngVel(wMax, aMax, dTime, prevPoint, currPoint):
+    angVel = 0
+
+    return float(angVel)
+
 class PathGenerator(): 
 
     def __init__(self, node: Node):
@@ -41,6 +46,7 @@ class PathGenerator():
         pointsOutput = [] # Output list of points with heading and velocity
         maxAccel = 8 # Max Acceleration (Default)
         maxVelocity = 10 # Max Velocity (Default)
+        maxAngularAcceleration = 2.5 # Max Angular Acceleration (Default)
         timeLimit = 500 #Amount of iterations before the velocity assigner gives up
         # X and Y Seperated Input Values
         xvalues = []
@@ -174,7 +180,7 @@ class PathGenerator():
                 # vf = sqrt(vi^2 + 2*a*d)
                 vel = math.sqrt(prevPoint.velocity ** 2 + 2 * maxAccel * distance)
                 if vel > currentMaxVel: vel = currentMaxVel
-                self.logger.debug("Vel Value {} at Point {}, {} with previous point {}, {} vel value {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y, prevPoint.velocity))
+                # self.logger.debug("Vel Value {} at Point {}, {} with previous point {}, {} vel value {}".format(vel, point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y, prevPoint.velocity))
                 point.velocity = vel if point.velocity > vel else point.velocity
                 # If path is not feasible, abort
                 timeDelta = (2/(point.velocity + prevPoint.velocity))* distance
@@ -192,50 +198,66 @@ class PathGenerator():
             
             # Stage 4: Heading Enforcement
             # Go through and find the heading changes
-  
-            for point in pointsInput:
-                # Skip 1st Point
-                if pointsInput.index(point) == 0: 
-                    pointIndex = pointsNoHead.index(point)
-                    waypointIndexes.append(pointIndex)
-                    continue
-                prevPoint = pointsInput[pointsInput.index(point)-1]
-                pointIndex = pointsNoHead.index(point)
-                prevPointIndex = pointsNoHead.index(prevPoint)
-                waypointIndexes.append(pointIndex)
-                # Find Left Distance, Find Right Distance, Figure out Which is shorter
-                leftDist = prevPoint.heading - (point.heading-360)
-                rightDist = point.heading - prevPoint.heading
-                if point.heading == prevPoint.heading:
-                    # No Heading Change over interval
-                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = 0
-                elif leftDist > rightDist:
-                    # Right is shorter, go right
-                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
-                else:
-                    # Left is shorter, go left
-                    headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-360)-prevPoint.heading)/(pointIndex-prevPointIndex)
-                headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)]] = 0
 
-
-            segmentAngVel = 0
-            prevHeading = 0
-            # max angular velocity support
-            for AngVel in headingSlopes:
-                if AngVel > maxAngularVelocity: AngVel = maxAngularVelocity
-            if debug: print(waypointIndexes)
-            if debug: print(headingSlopes)
+            self.logger.debug(f"{pointsInput}")
             for point in pointsNoHead:
-                index = pointsNoHead.index(point)
-                if index in waypointIndexes:
-                    segmentAngVel = headingSlopes[index] # update the segment angular velocity if the segment angular velocity exists
-                    pointsOutput.append(point)
+
+                if pointsNoHead.index(point) == 0:
+                    point.heading = 0.0
                     continue
-                headingVal = prevHeading + segmentAngVel # Heading Calculation using angular velocity
-                if headingVal < 0: headingVal = 360 + headingVal # make sure negative headings don't happen
-                point.heading = float(headingVal)
+
+                prevPoint = pointsNoHead[pointsNoHead.index(point) - 1]
+                distance = abs(findDistance(point.point.x, point.point.y, prevPoint.point.x, prevPoint.point.y))
+
+                # print(prevPoint + ", " + point)
+                
+                timeDelta = (2 / (point.velocity + prevPoint.velocity)) * distance
+                point.heading = calcAngVel(maxAngularAcceleration, timeDelta, point.heading - prevPoint.heading)
                 pointsOutput.append(point)
-                prevHeading = headingVal  
+
+            # for point in pointsInput:
+            #     # Skip 1st Point
+            #     if pointsInput.index(point) == 0: 
+            #         pointIndex = pointsNoHead.index(point)
+            #         waypointIndexes.append(pointIndex)
+            #         continue
+            #     prevPoint = pointsInput[pointsInput.index(point)-1]
+            #     pointIndex = pointsNoHead.index(point)
+            #     prevPointIndex = pointsNoHead.index(prevPoint)
+            #     waypointIndexes.append(pointIndex)
+            #     # Find Left Distance, Find Right Distance, Figure out Which is shorter
+            #     leftDist = prevPoint.heading - (point.heading-360)
+            #     rightDist = point.heading - prevPoint.heading
+            #     if point.heading == prevPoint.heading:
+            #         # No Heading Change over interval
+            #         headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = 0
+            #     elif leftDist > rightDist:
+            #         # Right is shorter, go right
+            #         headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-prevPoint.heading)/(pointIndex-prevPointIndex))
+            #     else:
+            #         # Left is shorter, go left
+            #         headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)-1]] = ((point.heading-360)-prevPoint.heading)/(pointIndex-prevPointIndex)
+            #     headingSlopes[waypointIndexes[waypointIndexes.index(pointIndex)]] = 0
+
+
+            # segmentAngVel = 0
+            # prevHeading = 0
+            # # max angular velocity support
+            # for AngVel in headingSlopes:
+            #     if AngVel > maxAngularVelocity: AngVel = maxAngularVelocity
+            # if debug: print(waypointIndexes)
+            # if debug: print(headingSlopes)
+            # for point in pointsNoHead:
+            #     index = pointsNoHead.index(point)
+            #     if index in waypointIndexes:
+            #         segmentAngVel = headingSlopes[index] # update the segment angular velocity if the segment angular velocity exists
+            #         pointsOutput.append(point)
+            #         continue
+            #     headingVal = prevHeading + segmentAngVel # Heading Calculation using angular velocity
+            #     if headingVal < 0: headingVal = 360 + headingVal # make sure negative headings don't happen
+            #     point.heading = float(headingVal)
+                # pointsOutput.append(point)
+            #     prevHeading = headingVal  
             self.logger.debug(f"Stage Four Time: {time.time() - startTime}")    
             self.logger.info(f"Path took {time.time() - pathStartTime} seconds to complete.")
             return pointsOutput
@@ -243,6 +265,7 @@ class PathGenerator():
             exc_type, exc_obj, exc_tb = sys.exc_info()
             fname = os.path.split(exc_tb.tb_frame.f_code.co_filename)[1]
             self.logger.error(f"Caught exception during generation {type(e)}: {e}, {exc_type, fname, exc_tb.tb_lineno}")
-            self.logger.debug(request.points)
-            self.logger.debug(f"")
+            self.logger.debug(f'{request.points}')
             return pointsOutput
+
+            

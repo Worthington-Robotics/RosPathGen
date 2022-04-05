@@ -13,7 +13,8 @@ def generate_launch_description():
             name = "pathserver",
             output = "screen",
             parameters = [config],
-            respawn = True
+            respawn = True,
+            arguments=['--ros-args', '--log-level', 'DEBUG']
         ),
         launch_ros.actions.Node(
             package = "rospathgen",
